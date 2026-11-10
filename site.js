@@ -17,151 +17,151 @@ const COLOR_HEX={red:'#b41022',blue:'#173a76',green:'#08765d',pink:'#d62972',blu
 const LOCAL_PRODUCTS=[
   {
     id:4,name:'Ensemble Danse Orientale Prestige',category:'ensemble',categoryLabel:'ENSEMBLE DANSE ORIENTALE',price:279,badge:'NOUVEAUTÉ',rating:4.9,reviews:18,
-    image:'static/images/collections/danse/danse-green-1.webp',
+    image:'green-1.webp',
     description:'Ensemble 3 pièces avec haut orné de franges dorées, jupe longue fendue et manches fluides. Une silhouette glamour pensée pour les spectacles, soirées et événements.',
     details:['Ensemble 3 pièces','Finitions dorées à franges','Jupe longue avec fentes hautes','Manches longues fluides en voile','Disponible en deux couleurs : Vert Émeraude et Rose'],
     sizes:['S','M','L','XL'],color:['green','rose'],
-    colorImages:{green:'static/images/collections/danse/danse-green-1.webp',rose:'static/images/collections/danse/danse-pink-1.webp'},
+    colorImages:{green:'danse-green-1.webp',rose:'danse-pink-1.webp'},
     galleries:{
-      green:['static/images/collections/danse/danse-green-1.webp','static/images/collections/danse/danse-green-2.webp','static/images/collections/danse/danse-green-3.webp','static/images/collections/danse/danse-green-4.webp','static/images/collections/danse/danse-green-5.webp'],
-      rose:['static/images/collections/danse/danse-pink-1.webp','static/images/collections/danse/danse-pink-2.webp','static/images/collections/danse/danse-pink-3.webp','static/images/collections/danse/danse-pink-4.webp','static/images/collections/danse/danse-pink-5.webp']
+      green:['danse-green-1.webp','danse-green-2.webp','danse-green-3.webp','danse-green-4.webp','danse-green-5.webp'],
+      rose:['danse-pink-1.webp','danse-pink-2.webp','danse-pink-3.webp','danse-pink-4.webp','danse-pink-5.webp']
     }
   },
   {
     id:5,name:'Shorts de compression femme',category:'compression',categoryLabel:'SHORTS DE COMPRESSION',price:199,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'static/images/collections/compression/shorts-compression-beige-pro-1.webp',
+    image:'shorts-compression-beige-pro-1.webp',
     description:'Short de compression femme taille haute, à la coupe près du corps, proposé en beige et en noir avec une finition lisse et invisible sous les vêtements.',
     details:['Taille haute gainante','Coupe près du corps','Design ouvert à l’arrière','Disponible en Beige et Noir','Taille standard'],
     sizes:['M/L','XL','XXL'],color:['beige','black'],
-    colorImages:{beige:'static/images/collections/compression/shorts-compression-beige-pro-1.webp',black:'static/images/collections/compression/shorts-compression-black-pro-1.webp'},
+    colorImages:{beige:'shorts-compression-beige-pro-1.webp',black:'shorts-compression-black-pro-1.webp'},
     galleries:{
-      beige:['static/images/collections/compression/shorts-compression-beige-pro-1.webp','static/images/collections/compression/shorts-compression-beige-pro-2.webp','static/images/collections/compression/shorts-compression-beige-pro-3.webp','static/images/collections/compression/shorts-compression-beige-pro-4.webp','static/images/collections/compression/shorts-compression-beige-pro-5.webp'],
-      black:['static/images/collections/compression/shorts-compression-black-pro-1.webp','static/images/collections/compression/shorts-compression-black-pro-2.webp','static/images/collections/compression/shorts-compression-black-pro-3.webp','static/images/collections/compression/shorts-compression-black-pro-4.webp','static/images/collections/compression/shorts-compression-black-pro-5.webp']
+      beige:['shorts-compression-beige-pro-1.webp','shorts-compression-beige-pro-2.webp','shorts-compression-beige-pro-3.webp','shorts-compression-beige-pro-4.webp','shorts-compression-beige-pro-5.webp'],
+      black:['shorts-compression-black-pro-1.webp','shorts-compression-black-pro-2.webp','shorts-compression-black-pro-3.webp','shorts-compression-black-pro-4.webp','shorts-compression-black-pro-5.webp']
     }
   },
   {
     id:6,name:'Ensemble Maid Satin Prestige',category:'ensemble',categoryLabel:'ENSEMBLE MAID SATIN',price:229,badge:'NOUVEAUTÉ',rating:0,reviews:0,
-    image:'static/images/collections/maid/maid-black-1.webp',
+    image:'maid-black-1.webp',
     description:'Un ensemble coordonné au style maid raffiné, mêlant satin lumineux, dentelle ivoire et détails délicats. Une création complète pensée pour une présentation élégante et premium.',
     details:['Corset satiné structuré avec laçage ivoire','Jupe évasée avec tablier bordé de dentelle','Ras-de-cou et deux bandes à nœuds assorties','Bretelles réglables et finitions soignées','Disponible en Noir et Rouge'],
     sizes:['Standard'],color:['black','red'],
-    colorImages:{black:'static/images/collections/maid/maid-black-1.webp',red:'static/images/collections/maid/maid-red-1.webp'},
+    colorImages:{black:'maid-black-1.webp',red:'maid-red-1.webp'},
     galleries:{
-      black:['static/images/collections/maid/maid-black-1.webp','static/images/collections/maid/maid-black-2.webp','static/images/collections/maid/maid-black-3.webp','static/images/collections/maid/maid-black-4.webp','static/images/collections/maid/maid-black-5.webp'],
-      red:['static/images/collections/maid/maid-red-1.webp','static/images/collections/maid/maid-red-2.webp','static/images/collections/maid/maid-red-3.webp','static/images/collections/maid/maid-red-4.webp','static/images/collections/maid/maid-red-5.webp']
+      black:['maid-black-1.webp','maid-black-2.webp','maid-black-3.webp','maid-black-4.webp','maid-black-5.webp'],
+      red:['maid-red-1.webp','maid-red-2.webp','maid-red-3.webp','maid-red-4.webp','maid-red-5.webp']
     }
   },
   {
     id:7,name:'Robe de Nuit Satin & Dentelle',category:'chemise',categoryLabel:'ROBE DE NUIT',price:200,badge:'NOUVEAUTÉ',rating:0,reviews:0,
-    image:'static/images/collections/robe-dentelle/robe-dentelle-purple-1.webp',
+    image:'robe-dentelle-purple-1.webp',
     description:'Une robe de nuit fluide en satin lumineux, sublimée par un haut et une finition de bas en dentelle florale. Sa coupe élégante et confortable accompagne les soirées avec douceur.',
     details:['Satin doux et fluide','Haut en dentelle florale','Bretelles fines réglables','Large finition en dentelle au bas','Disponible en Mauve, Bordo, Rouge, Blanc et Noir'],
     sizes:['S','M','L','XL','XXL'],color:['purple','bordo','red','white','black'],
-    colorImages:{purple:'static/images/collections/robe-dentelle/robe-dentelle-purple-1.webp',bordo:'static/images/collections/robe-dentelle/robe-dentelle-bordo-1.webp',red:'static/images/collections/robe-dentelle/robe-dentelle-red-1.webp',white:'static/images/collections/robe-dentelle/robe-dentelle-white-1.webp',black:'static/images/collections/robe-dentelle/robe-dentelle-black-1.webp'},
+    colorImages:{purple:'robe-dentelle-purple-1.webp',bordo:'robe-dentelle-bordo-1.webp',red:'robe-dentelle-red-1.webp',white:'robe-dentelle-white-1.webp',black:'robe-dentelle-black-1.webp'},
     galleries:{
-      purple:['static/images/collections/robe-dentelle/robe-dentelle-purple-1.webp','static/images/collections/robe-dentelle/robe-dentelle-purple-2.webp','static/images/collections/robe-dentelle/robe-dentelle-purple-3.webp','static/images/collections/robe-dentelle/robe-dentelle-purple-4.webp','static/images/collections/robe-dentelle/robe-dentelle-purple-5.webp'],
-      bordo:['static/images/collections/robe-dentelle/robe-dentelle-bordo-1.webp','static/images/collections/robe-dentelle/robe-dentelle-bordo-2.webp','static/images/collections/robe-dentelle/robe-dentelle-bordo-3.webp','static/images/collections/robe-dentelle/robe-dentelle-bordo-4.webp','static/images/collections/robe-dentelle/robe-dentelle-bordo-5.webp'],
-      red:['static/images/collections/robe-dentelle/robe-dentelle-red-1.webp','static/images/collections/robe-dentelle/robe-dentelle-red-2.webp','static/images/collections/robe-dentelle/robe-dentelle-red-3.webp','static/images/collections/robe-dentelle/robe-dentelle-red-4.webp','static/images/collections/robe-dentelle/robe-dentelle-red-5.webp'],
-      white:['static/images/collections/robe-dentelle/robe-dentelle-white-1.webp','static/images/collections/robe-dentelle/robe-dentelle-white-2.webp','static/images/collections/robe-dentelle/robe-dentelle-white-3.webp','static/images/collections/robe-dentelle/robe-dentelle-white-4.webp','static/images/collections/robe-dentelle/robe-dentelle-white-5.webp'],
-      black:['static/images/collections/robe-dentelle/robe-dentelle-black-1.webp','static/images/collections/robe-dentelle/robe-dentelle-black-2.webp','static/images/collections/robe-dentelle/robe-dentelle-black-3.webp','static/images/collections/robe-dentelle/robe-dentelle-black-4.webp','static/images/collections/robe-dentelle/robe-dentelle-black-5.webp']
+      purple:['robe-dentelle-purple-1.webp','robe-dentelle-purple-2.webp','robe-dentelle-purple-3.webp','robe-dentelle-purple-4.webp','robe-dentelle-purple-5.webp'],
+      bordo:['robe-dentelle-bordo-1.webp','robe-dentelle-bordo-2.webp','robe-dentelle-bordo-3.webp','robe-dentelle-bordo-4.webp','robe-dentelle-bordo-5.webp'],
+      red:['robe-dentelle-red-1.webp','robe-dentelle-red-2.webp','robe-dentelle-red-3.webp','robe-dentelle-red-4.webp','robe-dentelle-red-5.webp'],
+      white:['robe-dentelle-white-1.webp','robe-dentelle-white-2.webp','robe-dentelle-white-3.webp','robe-dentelle-white-4.webp','robe-dentelle-white-5.webp'],
+      black:['robe-dentelle-black-1.webp','robe-dentelle-black-2.webp','robe-dentelle-black-3.webp','robe-dentelle-black-4.webp','robe-dentelle-black-5.webp']
     }
   },
   {
     id:8,name:'Pack de 7 Culottes Coton Femme',category:'culotte',categoryLabel:'PACK DE CULOTTES',price:180,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'static/images/collections/culottes/pack-7-culottes-1.webp',
+    image:'pack-7-culottes-1.webp',
     description:'Un pack pratique de 7 culottes femme en coton doux, proposé dans un assortiment élégant de couleurs unies et de motifs délicats pour toute la semaine.',
     details:['Pack complet de 7 pièces','Coton doux et respirant','Coupe confortable avec bonne couvrance','Couleurs et motifs assortis','Disponible du S au XXL'],
     sizes:['S','M','L','XL','XXL'],color:['assorted'],
     kicker:'SR BRAND · PACK DE 7',
-    colorImages:{assorted:'static/images/collections/culottes/pack-7-culottes-1.webp'},
+    colorImages:{assorted:'pack-7-culottes-1.webp'},
     galleries:{
-      assorted:['static/images/collections/culottes/pack-7-culottes-1.webp','static/images/collections/culottes/pack-7-culottes-2.webp','static/images/collections/culottes/pack-7-culottes-3.webp','static/images/collections/culottes/pack-7-culottes-4.webp']
+      assorted:['pack-7-culottes-1.webp','pack-7-culottes-2.webp','pack-7-culottes-3.webp','pack-7-culottes-4.webp']
     }
   }
   ,{
     id:9,name:'Ensemble Infirmière Rouge & Blanc',category:'ensemble',categoryLabel:'ENSEMBLE INFIRMIÈRE',price:229,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'static/images/collections/infirmiere/infirmiere-flatlay-1.webp',
+    image:'infirmiere-flatlay-1.webp',
     description:'Ensemble infirmière rouge et blanc avec bonnet assorti, haut noué et jupe courte bordée de dentelle rouge. Présenté avec plusieurs vues pour mieux voir les détails du modèle.',
     details:['Ensemble rouge et blanc','Bonnet assorti inclus','Haut avec liens à nouer','Jupe courte avec finition en dentelle rouge','Disponible en tailles S/M et L/XL'],
     sizes:['S/M','L/XL'],color:['redwhite'],
-    colorImages:{redwhite:'static/images/collections/infirmiere/infirmiere-flatlay-1.webp'},
+    colorImages:{redwhite:'infirmiere-flatlay-1.webp'},
     galleries:{
-      redwhite:['static/images/collections/infirmiere/infirmiere-flatlay-1.webp','static/images/collections/infirmiere/infirmiere-flatlay-2.webp','static/images/collections/infirmiere/infirmiere-flatlay-3.webp','static/images/collections/infirmiere/infirmiere-flatlay-4.webp','static/images/collections/infirmiere/infirmiere-flatlay-5.webp']
+      redwhite:['infirmiere-flatlay-1.webp','infirmiere-flatlay-2.webp','infirmiere-flatlay-3.webp','infirmiere-flatlay-4.webp','infirmiere-flatlay-5.webp']
     }
   },
   {
     id:10,name:'Ensemble Nuit Dentelle & Kimono',category:'ensemble',categoryLabel:'ENSEMBLE DE NUIT',price:229,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'static/images/collections/ensemble-nuit-kimono/ensemble-nuit-blush-1.webp',
+    image:'ensemble-nuit-blush-1.webp',
     description:'Un ensemble de nuit deux pièces composé d’une nuisette fluide à bretelles fines et d’un kimono long assorti. La dentelle florale, les manches évasées et les finitions délicates créent une silhouette douce et élégante.',
     details:['Ensemble deux pièces : nuisette et kimono long','Dentelle florale sur le décolleté, la taille et les poignets','Voile fluide avec manches larges évasées','Disponible en Rose poudré, Mauve grisé, Rouge, Noir et Blanc','Taille Standard'],
     sizes:['Standard'],color:['blush','mauve','red','black','white'],
     colorImages:{
-      blush:'static/images/collections/ensemble-nuit-kimono/ensemble-nuit-blush-1.webp',
-      mauve:'static/images/collections/ensemble-nuit-kimono/ensemble-nuit-mauve-1.webp',
-      red:'static/images/collections/ensemble-nuit-kimono/ensemble-nuit-red-1.webp',
-      black:'static/images/collections/ensemble-nuit-kimono/ensemble-nuit-black-1.webp',
-      white:'static/images/collections/ensemble-nuit-kimono/ensemble-nuit-white-1.webp'
+      blush:'ensemble-nuit-blush-1.webp',
+      mauve:'ensemble-nuit-mauve-1.webp',
+      red:'ensemble-nuit-red-1.webp',
+      black:'ensemble-nuit-black-1.webp',
+      white:'ensemble-nuit-white-1.webp'
     },
     galleries:{
-      blush:['static/images/collections/ensemble-nuit-kimono/ensemble-nuit-blush-1.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-blush-2.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-blush-3.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-blush-4.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-blush-5.webp'],
-      mauve:['static/images/collections/ensemble-nuit-kimono/ensemble-nuit-mauve-1.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-mauve-2.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-mauve-3.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-mauve-4.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-mauve-5.webp'],
-      red:['static/images/collections/ensemble-nuit-kimono/ensemble-nuit-red-1.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-red-2.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-red-3.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-red-4.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-red-5.webp'],
-      black:['static/images/collections/ensemble-nuit-kimono/ensemble-nuit-black-1.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-black-2.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-black-3.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-black-4.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-black-5.webp'],
-      white:['static/images/collections/ensemble-nuit-kimono/ensemble-nuit-white-1.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-white-2.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-white-3.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-white-4.webp','static/images/collections/ensemble-nuit-kimono/ensemble-nuit-white-5.webp']
+      blush:['ensemble-nuit-blush-1.webp','ensemble-nuit-blush-2.webp','ensemble-nuit-blush-3.webp','ensemble-nuit-blush-4.webp','ensemble-nuit-blush-5.webp'],
+      mauve:['ensemble-nuit-mauve-1.webp','ensemble-nuit-mauve-2.webp','ensemble-nuit-mauve-3.webp','ensemble-nuit-mauve-4.webp','ensemble-nuit-mauve-5.webp'],
+      red:['ensemble-nuit-red-1.webp','ensemble-nuit-red-2.webp','ensemble-nuit-red-3.webp','ensemble-nuit-red-4.webp','ensemble-nuit-red-5.webp'],
+      black:['ensemble-nuit-black-1.webp','ensemble-nuit-black-2.webp','ensemble-nuit-black-3.webp','ensemble-nuit-black-4.webp','ensemble-nuit-black-5.webp'],
+      white:['ensemble-nuit-white-1.webp','ensemble-nuit-white-2.webp','ensemble-nuit-white-3.webp','ensemble-nuit-white-4.webp','ensemble-nuit-white-5.webp']
     }
   },
   {
     id:11,name:'Ensemble Lingerie Satin V',category:'ensemble',categoryLabel:'ENSEMBLE LINGERIE',price:150,bundleQty:3,bundlePrice:380,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'static/images/collections/lingerie-v/lingerie-rose-1.webp',
+    image:'lingerie-rose-1.webp',
     description:'Un ensemble lingerie raffiné avec soutien-gorge rembourré, culotte assortie et harnais décoratif. Les détails métalliques en V apportent une finition élégante. Une pièce coûte 150 DH, avec une offre de trois pièces à 380 DH.',
     details:['Ensemble lingerie satiné avec détails métalliques en V','Soutien-gorge rembourré à bretelles réglables','Culotte assortie et harnais décoratif inclus','1 pièce : 150 DH · Offre 3 pièces : 380 DH','Disponible en Rose, Beige, Blanc, Violet, Rouge et Noir','Tailles S, M, L et XL'],
     sizes:['S','M','L','XL'],color:['rose','beige','sky','violet','red','black'],
     kicker:'SR BRAND · 6 COULEURS',
     colorImages:{
-      rose:'static/images/collections/lingerie-v/lingerie-rose-1.webp',
-      beige:'static/images/collections/lingerie-v/lingerie-beige-1.webp',
-      sky:'static/images/collections/lingerie-v/lingerie-sky-1.webp',
-      violet:'static/images/collections/lingerie-v/lingerie-violet-1.webp',
-      red:'static/images/collections/lingerie-v/lingerie-red-1.webp',
-      black:'static/images/collections/lingerie-v/lingerie-black-1.webp'
+      rose:'lingerie-rose-1.webp',
+      beige:'lingerie-beige-1.webp',
+      sky:'lingerie-sky-1.webp',
+      violet:'lingerie-violet-1.webp',
+      red:'lingerie-red-1.webp',
+      black:'lingerie-black-1.webp'
     },
     galleries:{
-      rose:['static/images/collections/lingerie-v/lingerie-rose-1.webp','static/images/collections/lingerie-v/lingerie-rose-2.webp','static/images/collections/lingerie-v/lingerie-rose-3.webp','static/images/collections/lingerie-v/lingerie-rose-4.webp','static/images/collections/lingerie-v/lingerie-rose-5.webp'],
-      beige:['static/images/collections/lingerie-v/lingerie-beige-1.webp','static/images/collections/lingerie-v/lingerie-beige-2.webp','static/images/collections/lingerie-v/lingerie-beige-3.webp','static/images/collections/lingerie-v/lingerie-beige-4.webp','static/images/collections/lingerie-v/lingerie-beige-5.webp'],
-      sky:['static/images/collections/lingerie-v/lingerie-sky-1.webp','static/images/collections/lingerie-v/lingerie-sky-2.webp','static/images/collections/lingerie-v/lingerie-sky-3.webp','static/images/collections/lingerie-v/lingerie-sky-4.webp','static/images/collections/lingerie-v/lingerie-sky-5.webp'],
-      violet:['static/images/collections/lingerie-v/lingerie-violet-1.webp','static/images/collections/lingerie-v/lingerie-violet-2.webp','static/images/collections/lingerie-v/lingerie-violet-3.webp','static/images/collections/lingerie-v/lingerie-violet-4.webp','static/images/collections/lingerie-v/lingerie-violet-5.webp'],
-      red:['static/images/collections/lingerie-v/lingerie-red-1.webp','static/images/collections/lingerie-v/lingerie-red-2.webp','static/images/collections/lingerie-v/lingerie-red-3.webp','static/images/collections/lingerie-v/lingerie-red-4.webp','static/images/collections/lingerie-v/lingerie-red-5.webp'],
-      black:['static/images/collections/lingerie-v/lingerie-black-1.webp','static/images/collections/lingerie-v/lingerie-black-2.webp','static/images/collections/lingerie-v/lingerie-black-3.webp','static/images/collections/lingerie-v/lingerie-black-4.webp','static/images/collections/lingerie-v/lingerie-black-5.webp']
+      rose:['lingerie-rose-1.webp','lingerie-rose-2.webp','lingerie-rose-3.webp','lingerie-rose-4.webp','lingerie-rose-5.webp'],
+      beige:['lingerie-beige-1.webp','lingerie-beige-2.webp','lingerie-beige-3.webp','lingerie-beige-4.webp','lingerie-beige-5.webp'],
+      sky:['lingerie-sky-1.webp','lingerie-sky-2.webp','lingerie-sky-3.webp','lingerie-sky-4.webp','lingerie-sky-5.webp'],
+      violet:['lingerie-violet-1.webp','lingerie-violet-2.webp','lingerie-violet-3.webp','lingerie-violet-4.webp','lingerie-violet-5.webp'],
+      red:['lingerie-red-1.webp','lingerie-red-2.webp','lingerie-red-3.webp','lingerie-red-4.webp','lingerie-red-5.webp'],
+      black:['lingerie-black-1.webp','lingerie-black-2.webp','lingerie-black-3.webp','lingerie-black-4.webp','lingerie-black-5.webp']
     }
   }
   ,
   {
     id:12,name:'Short Gainant Taille Haute Sculptant',category:'compression',categoryLabel:'SHORT GAINANT SCULPTANT',price:180,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'static/images/collections/short-gainant-180/short-gainant-beige-2.webp',
+    image:'short-gainant-beige-2.webp',
     description:'Short gainant femme taille haute avec maintien du ventre, matière extensible et zones texturées pensées pour lisser la silhouette tout en restant confortable au quotidien.',
     details:['Taille haute gainante et maintien abdominal','Matière extensible et douce','Zones texturées sculptantes','Coupe mi-cuisse confortable','Disponible en Beige et Noir','Tailles M/L, XL/XXL et 3XL/4XL'],
     sizes:['M/L','XL/XXL','3XL/4XL'],color:['beige','black'],
     kicker:'SR BRAND · 2 COULEURS',
     colorImages:{
-      beige:'static/images/collections/short-gainant-180/short-gainant-beige-2.webp',
-      black:'static/images/collections/short-gainant-180/short-gainant-black-2.webp'
+      beige:'beige-2.webp',
+      black:'black-2.webp'
     },
     galleries:{
       beige:[
-        'static/images/collections/short-gainant-180/short-gainant-beige-1.webp',
-        'static/images/collections/short-gainant-180/short-gainant-beige-2.webp',
-        'static/images/collections/short-gainant-180/short-gainant-beige-3.webp',
-        'static/images/collections/short-gainant-180/short-gainant-beige-4.webp',
-        'static/images/collections/short-gainant-180/short-gainant-beige-5.webp',
-        'static/images/collections/short-gainant-180/short-gainant-beige-6.webp'
+        'beige-1.webp',
+        'beige-2.webp',
+        'beige-3.webp',
+        'beige-4.webp',
+        'beige-5.webp',
+        'beige-6.webp'
       ],
       black:[
-        'static/images/collections/short-gainant-180/short-gainant-black-1.webp',
-        'static/images/collections/short-gainant-180/short-gainant-black-2.webp',
-        'static/images/collections/short-gainant-180/short-gainant-black-3.webp',
-        'static/images/collections/short-gainant-180/short-gainant-black-4.webp',
-        'static/images/collections/short-gainant-180/short-gainant-black-5.webp',
-        'static/images/collections/short-gainant-180/short-gainant-black-6.webp'
+        'black-1.webp',
+        'black-2.webp',
+        'black-3.webp',
+        'black-4.webp',
+        'black-5.webp',
+        'black-6.webp'
       ]
     }
   }
@@ -928,7 +928,7 @@ function initHero(){
       text:'Un ensemble de nuit féminin avec kimono assorti, pensé pour une présentation chic et raffinée.',
       cta:'Voir l’ensemble nuit',
       link:'produit.html?id=10',
-      img:'static/images/collections/ensemble-nuit-kimono/ensemble-nuit-blush-1.webp',
+      img:'ensemble-nuit-blush-1.webp',
       pos:'center',
       size:'contain',
       bg:'#ead9d4'
@@ -940,7 +940,7 @@ function initHero(){
       text:'Un short taille haute gainant disponible en Beige et Noir, proposé en M/L, XL/XXL et 3XL/4XL.',
       cta:'Voir le short gainant',
       link:'produit.html?id=12',
-      img:'static/images/collections/short-gainant-180/short-gainant-beige-2.webp',
+      img:'short-gainant-beige-2.webp',
       pos:'center',
       size:'contain',
       bg:'#eee8e2'
@@ -952,7 +952,7 @@ function initHero(){
       text:'Ensemble Lingerie Satin V disponible en six couleurs, avec une finition élégante et raffinée.',
       cta:'Voir la lingerie',
       link:'produit.html?id=11',
-      img:'static/images/collections/lingerie-v/lingerie-rose-1.webp',
+      img:'lingerie-rose-1.webp',
       pos:'center',
       size:'contain',
       bg:'#eadfd8'
@@ -964,7 +964,7 @@ function initHero(){
       text:'Une silhouette prestige aux détails dorés, disponible en Vert Émeraude et Rose.',
       cta:'Voir l’ensemble',
       link:'produit.html?id=4',
-      img:'static/images/collections/danse/danse-green-1.webp',
+      img:'danse-green-1.webp',
       pos:'center',
       size:'contain',
       bg:'#ecebea'
@@ -976,7 +976,7 @@ function initHero(){
       text:'Le short de compression femme pensé pour le confort quotidien et une finition discrète sous les vêtements.',
       cta:'Voir le short',
       link:'produit.html?id=5',
-      img:'static/images/collections/compression/shorts-compression-beige-pro-1.webp',
+      img:'shorts-compression-beige-pro-1.webp',
       pos:'center',
       size:'contain',
       bg:'#eadbc8'
@@ -988,7 +988,7 @@ function initHero(){
       text:'Un ensemble complet aux finitions soignées, disponible en Noir et Rouge.',
       cta:'Voir l’ensemble',
       link:'produit.html?id=6',
-      img:'static/images/collections/maid/maid-black-1.webp',
+      img:'maid-black-1.webp',
       pos:'center',
       size:'contain',
       bg:'#efe7de'
@@ -1000,7 +1000,7 @@ function initHero(){
       text:'Une robe de nuit élégante et confortable, disponible en cinq couleurs et cinq tailles.',
       cta:'Voir la robe de nuit',
       link:'produit.html?id=7',
-      img:'static/images/collections/robe-dentelle/robe-dentelle-purple-1.webp',
+      img:'robe-dentelle-purple-1.webp',
       pos:'center',
       size:'contain',
       bg:'#eee8e3'
@@ -1012,7 +1012,7 @@ function initHero(){
       text:'Un pack pratique en coton doux, avec un assortiment élégant de couleurs et de motifs.',
       cta:'Voir le pack de 7',
       link:'produit.html?id=8',
-      img:'static/images/collections/culottes/pack-7-culottes-1.webp',
+      img:'pack-7-culottes-1.webp',
       pos:'center',
       size:'contain',
       bg:'#efe8e4'
@@ -1024,7 +1024,7 @@ function initHero(){
       text:'Ensemble Infirmière Rouge & Blanc présenté avec plusieurs vues pour mieux découvrir chaque détail.',
       cta:'Voir le modèle',
       link:'produit.html?id=9',
-      img:'static/images/collections/infirmiere/infirmiere-flatlay-1.webp',
+      img:'infirmiere-flatlay-1.webp',
       pos:'center',
       size:'contain',
       bg:'#f0e6df'
