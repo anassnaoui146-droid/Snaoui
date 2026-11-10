@@ -14,6 +14,13 @@ const COLORS=['red','blue','green','white','black'];
 const COLOR_LABELS={red:'Rouge',blue:'Bleu',green:'Vert Émeraude',pink:'Magenta',blush:'Rose poudré',rose:'Rose',purple:'Mauve',mauve:'Mauve grisé',violet:'Violet',bordo:'Bordo',white:'Blanc',black:'Noir',beige:'Beige',sky:'Blanc',assorted:'Couleurs assorties',redwhite:'Rouge & Blanc'};
 const COLOR_HEX={red:'#b41022',blue:'#173a76',green:'#08765d',pink:'#d62972',blush:'#d8a6ad',rose:'#efa5b2',purple:'#b69ac3',mauve:'#9f929d',violet:'#963d79',bordo:'#650018',white:'#f7f7f4',black:'#171717',beige:'#e8d2bc',sky:'#c9dcf8',assorted:'linear-gradient(135deg,#171717 0 25%,#a7192e 25% 50%,#f2d6d8 50% 75%,#f7f1e8 75%)',redwhite:'linear-gradient(135deg,#ffffff 0 48%,#c81f2c 48% 100%)'};
 
+// ===== IMAGES : un seul endroit pour changer le dossier des photos =====
+// Mets ici le dossier qui contient tes .webp (ex: 'static/images/' ou 'images/' ou '' si à côté de index.html)
+const IMG_BASE='static/images/';
+const imgUrl=f=>(!f||/^(https?:|data:|blob:|\/|static\/|images\/)/.test(f))?f:IMG_BASE+f;
+const mapObj=(o,fn)=>Object.fromEntries(Object.entries(o||{}).map(([k,v])=>[k,fn(v)]));
+const withImages=p=>({...p,image:imgUrl(p.image),colorImages:mapObj(p.colorImages,imgUrl),galleries:mapObj(p.galleries,a=>a.map(imgUrl))});
+
 const LOCAL_PRODUCTS=[
   {
     id:4,name:'Ensemble Danse Orientale Prestige',category:'ensemble',categoryLabel:'ENSEMBLE DANSE ORIENTALE',price:279,badge:'NOUVEAUTÉ',rating:4.9,reviews:18,
@@ -143,25 +150,25 @@ const LOCAL_PRODUCTS=[
     sizes:['M/L','XL/XXL','3XL/4XL'],color:['beige','black'],
     kicker:'SR BRAND · 2 COULEURS',
     colorImages:{
-      beige:'beige-2.webp',
-      black:'black-2.webp'
+      beige:'short-gainant-beige-2.webp',
+      black:'short-gainant-black-2.webp'
     },
     galleries:{
       beige:[
-        'beige-1.webp',
-        'beige-2.webp',
-        'beige-3.webp',
-        'beige-4.webp',
-        'beige-5.webp',
-        'beige-6.webp'
+        'short-gainant-beige-1.webp',
+        'short-gainant-beige-2.webp',
+        'short-gainant-beige-3.webp',
+        'short-gainant-beige-4.webp',
+        'short-gainant-beige-5.webp',
+        'short-gainant-beige-6.webp'
       ],
       black:[
-        'black-1.webp',
-        'black-2.webp',
-        'black-3.webp',
-        'black-4.webp',
-        'black-5.webp',
-        'black-6.webp'
+        'short-gainant-black-1.webp',
+        'short-gainant-black-2.webp',
+        'short-gainant-black-3.webp',
+        'short-gainant-black-4.webp',
+        'short-gainant-black-5.webp',
+        'short-gainant-black-6.webp'
       ]
     }
   }
@@ -169,7 +176,7 @@ const LOCAL_PRODUCTS=[
 
 ];
 
-let PRODUCTS=[...LOCAL_PRODUCTS];
+let PRODUCTS=LOCAL_PRODUCTS.map(withImages);
 let cart=JSON.parse(localStorage.getItem('srbrand_cart')||'[]');
 let activeCategory='all',searchTerm='';
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -191,7 +198,15 @@ function setActiveNav(){
   const a=document.querySelector(`[data-nav="${key}"]`);if(a)a.classList.add('active');
 }
 function initMobile(){const b=$('#mobileMenuBtn'),n=$('#mainNav');if(b&&n)b.addEventListener('click',()=>n.classList.toggle('open'))}
-async function loadProducts(){PRODUCTS=[...LOCAL_PRODUCTS]}
+function renderHomeStory(){
+  const m=$('#homeStoryMedia');if(!m||m.querySelector('img'))return;
+  const img=document.createElement('img');
+  img.src=imgUrl('static/images/home-histoire-kimono-photo.png');
+  img.alt='Modèle portant un ensemble nuit dentelle et kimono rose';
+  img.loading='lazy';
+  m.appendChild(img);
+}
+async function loadProducts(){PRODUCTS=LOCAL_PRODUCTS.map(withImages)}
 
 function colorDots(p){
   return `<div class="card-colors" aria-label="Couleurs disponibles">${p.color.map((c,i)=>`<button class="card-color-btn ${i===0?'active':''}" data-card-color="${c}" data-product-id="${p.id}" style="--swatch:${COLOR_HEX[c]}" title="${COLOR_LABELS[c]}" aria-label="${COLOR_LABELS[c]}"></button>`).join('')}</div>`
@@ -1035,7 +1050,7 @@ function initHero(){
   let timer=null;
 
   wrap.innerHTML=slides.map((s,i)=>`<article class="hero-slide ${i?'':'active'}">
-    <div class="hero-image" style="background-image:url('${s.img}');background-position:${s.pos||'center'};background-size:${s.size||'contain'};background-repeat:no-repeat;background-color:${s.bg||'#eee'}"></div>
+    <div class="hero-image" style="background-image:url('${imgUrl(s.img)}');background-position:${s.pos||'center'};background-size:${s.size||'contain'};background-repeat:no-repeat;background-color:${s.bg||'#eee'}"></div>
     <div class="shade"></div>
     <div class="hero-copy">
       <p class="eyebrow">${s.eyebrow}</p>
@@ -1066,4 +1081,4 @@ function initHero(){
 
   startAuto();
 }
-window.addEventListener('DOMContentLoaded',async()=>{initPage();initProfileSticker();await loadProducts();renderProducts('#productGrid',false);renderProducts('#featuredProducts',true);renderCartPage();renderCheckoutPage();renderProductDetail();initHero();initAccountPage()});
+window.addEventListener('DOMContentLoaded',async()=>{initPage();initProfileSticker();await loadProducts();renderProducts('#productGrid',false);renderProducts('#featuredProducts',true);renderCartPage();renderCheckoutPage();renderProductDetail();initHero();renderHomeStory();initAccountPage()});
