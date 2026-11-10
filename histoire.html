@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SR BRAND — Notre histoire, notre vision et notre univers féminin.">
+  <title>SR BRAND — Notre histoire</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260904-full-audit-1">
+  <style>
+    .story-page{overflow:hidden;background:#fff;color:#121212}
+    .story-shell{width:min(1240px,calc(100% - 44px));margin:0 auto}
+    .story-kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:#a96939;margin:0 0 14px}
+    .story-display{font-family:'Playfair Display',serif;font-weight:600;letter-spacing:-.035em;line-height:.98;margin:0}
+    .story-lead{font-size:clamp(16px,1.7vw,20px);line-height:1.75;color:#666;max-width:650px}
+
+    .story-hero{padding:74px 0 82px;background:linear-gradient(180deg,#fbf7f2 0%,#fff 92%)}
+    .story-hero-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:58px;align-items:center}
+    .story-hero h1{font-size:clamp(48px,7.2vw,100px);max-width:720px}
+    .story-hero-copy{padding:28px 0}
+    .story-hero-copy .story-lead{margin:28px 0 30px}
+    .story-signature{display:flex;gap:12px;align-items:center;font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+    .story-signature:before{content:"";width:48px;height:1px;background:#111}
+
+    .story-collage{position:relative;min-height:700px}
+    .story-photo{position:absolute;overflow:hidden;background:#f5efe9;box-shadow:0 20px 60px rgba(54,38,26,.10)}
+    .story-photo img{width:100%;height:100%;object-fit:cover;display:block}
+    .story-photo.main{width:58%;height:74%;right:0;top:0;border-radius:190px 190px 26px 26px}
+    .story-photo.small-a{width:43%;height:45%;left:0;bottom:4%;border-radius:24px}
+    .story-photo.small-b{width:32%;height:35%;left:23%;top:7%;border:10px solid #fff;border-radius:22px}
+    .story-note{position:absolute;right:5%;bottom:2%;width:230px;background:#111;color:#fff;padding:22px;border-radius:18px;font-size:13px;line-height:1.6;box-shadow:0 18px 44px rgba(0,0,0,.18)}
+    .story-note strong{display:block;font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px}
+
+    .manifesto{padding:92px 0}
+    .manifesto-grid{display:grid;grid-template-columns:.72fr 1.28fr;gap:70px;align-items:start}
+    .manifesto h2{font-size:clamp(42px,5vw,72px);max-width:850px}
+    .manifesto-copy{columns:2;column-gap:34px;color:#555;font-size:17px;line-height:1.85;margin-top:38px}
+    .manifesto-copy p{margin:0 0 20px;break-inside:avoid}
+    .manifesto-number{font-family:'Playfair Display',serif;font-size:clamp(110px,16vw,220px);line-height:.8;color:#efe7df;letter-spacing:-.06em;position:sticky;top:120px}
+
+
+    .story-feature{padding:24px 0 92px;background:#fff}
+    .feature-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:stretch}
+    .feature-intro{background:#f7f2ec;border-radius:32px;padding:48px;position:relative;overflow:hidden;min-height:420px;display:flex;flex-direction:column;justify-content:space-between}
+    .feature-intro:after{content:"SR";position:absolute;right:-18px;bottom:-56px;font-family:'Playfair Display',serif;font-size:220px;line-height:1;color:rgba(169,105,57,.07);pointer-events:none}
+    .feature-intro h2{font-size:clamp(40px,4.8vw,66px);max-width:700px;position:relative;z-index:1}
+    .feature-intro p{max-width:620px;color:#666;line-height:1.8;font-size:17px;position:relative;z-index:1;margin:22px 0 0}
+    .feature-sign{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:#a96939;position:relative;z-index:1}
+    .feature-cards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .feature-card{border:1px solid #eadfd4;border-radius:28px;padding:30px;background:#fff;min-height:200px;display:flex;flex-direction:column;justify-content:space-between}
+    .feature-card.dark{background:#141414;color:#fff;border-color:#141414}
+    .feature-card .feature-num{font-family:'Playfair Display',serif;font-size:54px;line-height:1;color:#b37749}
+    .feature-card.dark .feature-num{color:#d9aa81}
+    .feature-card h3{font-family:'Playfair Display',serif;font-size:27px;margin:20px 0 8px}
+    .feature-card p{margin:0;line-height:1.65;color:#666}
+    .feature-card.dark p{color:#aaa}
+    .feature-photo{grid-column:1/3;border-radius:28px;overflow:hidden;min-height:240px;position:relative;background:#f4eee7}
+    .feature-photo img{width:100%;height:100%;object-fit:cover;display:block}
+    .feature-photo span{position:absolute;left:18px;bottom:18px;background:rgba(255,255,255,.94);padding:10px 14px;border-radius:999px;font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:700}
+
+    .story-process{padding:86px 0;background:#111;color:#fff}
+    .story-process .story-kicker{color:#d9aa81}
+    .story-process-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:48px}
+    .story-process h2{font-size:clamp(42px,5vw,68px);max-width:700px}
+    .process-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.17)}
+    .process-card{padding:34px 28px 36px 0;border-right:1px solid rgba(255,255,255,.17);min-height:260px}
+    .process-card+ .process-card{padding-left:28px}
+    .process-card:last-child{border-right:0}
+    .process-card span{font-family:'Playfair Display',serif;font-size:52px;color:#d9aa81;display:block;margin-bottom:38px}
+    .process-card h3{font-family:'Playfair Display',serif;font-size:28px;margin:0 0 12px}
+    .process-card p{color:#bdbdbd;line-height:1.75;margin:0;max-width:320px}
+
+    .story-mosaic{padding:96px 0 78px}
+    .mosaic-head{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:42px}
+    .mosaic-head h2{font-size:clamp(42px,5vw,72px)}
+    .mosaic-grid{display:grid;grid-template-columns:1.2fr .8fr .8fr;grid-template-rows:360px 300px;gap:18px}
+    .mosaic-item{overflow:hidden;border-radius:24px;background:#f5efe9;position:relative}
+    .mosaic-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+    .mosaic-item:hover img{transform:scale(1.025)}
+    .mosaic-item.one{grid-row:1/3}
+    .mosaic-item.four{grid-column:2/4}
+    .mosaic-label{position:absolute;left:16px;bottom:16px;background:rgba(255,255,255,.93);backdrop-filter:blur(8px);padding:10px 13px;border-radius:999px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+
+    .story-values{padding:80px 0 100px;background:#f7f2ec}
+    .values-head{text-align:center;max-width:760px;margin:0 auto 46px}
+    .values-head h2{font-size:clamp(42px,5vw,68px)}
+    .values-head p{color:#666;line-height:1.8;font-size:17px}
+    .values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .value-card{background:#fff;border:1px solid #eadfd4;border-radius:28px;padding:34px;min-height:280px;display:flex;flex-direction:column;justify-content:space-between}
+    .value-icon{font-family:'Playfair Display',serif;font-size:54px;color:#b37749}
+    .value-card h3{font-family:'Playfair Display',serif;font-size:30px;margin:0 0 10px}
+    .value-card p{margin:0;color:#666;line-height:1.75}
+
+    .story-quote{padding:104px 0;background:#fff}
+    .quote-box{max-width:1000px;margin:0 auto;text-align:center}
+    .quote-mark{font-family:'Playfair Display',serif;font-size:86px;line-height:.6;color:#d6b89e}
+    .quote-box blockquote{font-family:'Playfair Display',serif;font-size:clamp(34px,4.6vw,62px);line-height:1.18;margin:28px 0 24px;letter-spacing:-.025em}
+    .quote-box p{font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:#a96939}
+
+    .story-cta{padding:0 0 100px}
+    .cta-panel{background:#161616;color:#fff;border-radius:36px;padding:58px 62px;display:grid;grid-template-columns:1.25fr .75fr;gap:42px;align-items:center;overflow:hidden;position:relative}
+    .cta-panel:after{content:"SR";position:absolute;right:-20px;bottom:-90px;font-family:'Playfair Display',serif;font-size:260px;color:rgba(255,255,255,.035);line-height:1;pointer-events:none}
+    .cta-panel h2{font-size:clamp(40px,5vw,70px);position:relative;z-index:1}
+    .cta-panel p{color:#bdbdbd;line-height:1.8;max-width:640px;position:relative;z-index:1}
+    .cta-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;position:relative;z-index:1}
+    .story-btn{display:inline-flex;min-height:54px;align-items:center;justify-content:center;padding:0 24px;border-radius:999px;text-decoration:none;font-weight:700}
+    .story-btn.light{background:#fff;color:#111}.story-btn.outline{border:1px solid rgba(255,255,255,.35);color:#fff}
+
+    @media(max-width:1000px){
+      .story-hero-grid,.manifesto-grid,.mosaic-head,.cta-panel{grid-template-columns:1fr}
+
+      .feature-wrap{grid-template-columns:1fr}.feature-intro{min-height:360px}.feature-cards{grid-template-columns:1fr 1fr}
+
+      .story-collage{min-height:640px;margin-top:10px}
+      .manifesto-number{position:static;font-size:100px}
+      .manifesto-copy{columns:1}
+      .process-grid{grid-template-columns:1fr}.process-card{border-right:0;border-bottom:1px solid rgba(255,255,255,.17);padding:28px 0!important;min-height:auto}.process-card:last-child{border-bottom:0}
+      .mosaic-grid{grid-template-columns:1fr 1fr;grid-template-rows:420px 300px 300px}.mosaic-item.one{grid-row:1/2;grid-column:1/3}.mosaic-item.four{grid-column:1/3}
+      .values-grid{grid-template-columns:1fr}
+      .cta-actions{justify-content:flex-start}
+    }
+    @media(max-width:640px){
+      .story-shell{width:min(100% - 28px,1240px)}.feature-intro{padding:34px 26px;min-height:330px}.feature-cards{grid-template-columns:1fr}.feature-photo{grid-column:auto;min-height:260px}.story-hero{padding:48px 0 60px}.story-collage{min-height:510px}.story-photo.main{width:67%;height:68%}.story-photo.small-a{width:50%;height:40%}.story-photo.small-b{width:36%;height:31%;left:17%;top:8%}.story-note{width:190px;padding:16px;right:0}.story-note strong{font-size:19px}
+      .manifesto,.story-mosaic,.story-values,.story-quote{padding:68px 0}.story-process{padding:68px 0}.story-process-head{display:block}.mosaic-grid{grid-template-columns:1fr;grid-template-rows:420px 300px 300px 300px}.mosaic-item.one,.mosaic-item.four{grid-column:auto;grid-row:auto}.cta-panel{padding:38px 26px;border-radius:26px}.story-cta{padding-bottom:70px}
+    }
+  </style>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1020120844392689');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1020120844392689&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+</head>
+<body>
+<div class="topbar"><span id="topbarText">✨ Livraison gratuite partout au Maroc · Commandez maintenant</span></div>
+<header class="site-header">
+  <button class="icon-btn mobile-menu" id="mobileMenuBtn" aria-label="Ouvrir le menu">☰</button>
+  <a class="logo" href="index.html" id="brandLogo">SR BRAND</a>
+  <nav class="main-nav" id="mainNav">
+    <a data-nav="accueil" href="index.html">Accueil</a>
+    <a data-nav="boutique" href="boutique.html">La boutique</a>
+    <a data-nav="histoire" href="histoire.html">Histoire</a>
+    <a data-nav="blog" href="blog.html">Blogs</a>
+    <a data-nav="contact" href="contact.html">Contact</a>
+  </nav>
+  <div class="header-actions"><a class="instagram-sticker" href="https://www.instagram.com/srbrand.ma/" target="_blank" rel="noopener noreferrer" aria-label="Instagram SR BRAND" title="Instagram @srbrand.ma"><span class="instagram-avatar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.3" y="3.3" width="17.4" height="17.4" rx="5"></rect><circle cx="12" cy="12" r="4.1"></circle><circle cx="17.4" cy="6.7" r="1"></circle></svg></span><span class="instagram-sticker-label">Instagram</span></a><a class="profile-sticker" id="profileSticker" href="compte.html" aria-label="Mon profil" title="Mon profil"><span class="profile-avatar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.3"></circle><path d="M5.5 20c.5-4.1 2.8-6.2 6.5-6.2s6 2.1 6.5 6.2"></path></svg></span><span class="profile-sticker-label">Profil</span></a><a class="cart-btn cart-icon-link" href="panier.html" aria-label="Ouvrir le panier" title="Panier">
+<span class="cart-avatar-icon" aria-hidden="true">
+<svg class="cart-line-icon" viewBox="0 0 32 32">
+  <path d="M3.5 5.5h4l2.9 13.2h13.2l3-9.2H9.2"></path>
+  <path d="M11.5 22.2h12"></path>
+  <circle cx="12.7" cy="26.4" r="1.7"></circle>
+  <circle cx="23.2" cy="26.4" r="1.7"></circle>
+</svg>
+</span>
+<span class="cart-label">Panier</span>
+<span id="cartCount" class="cart-count-accessible">0</span>
+</a></div>
+</header>
+<div class="search-panel" id="searchPanel"><div class="search-inner"><input id="searchInput" type="search" placeholder="Rechercher un produit..."><button id="clearSearch">Effacer</button></div></div>
+
+<main class="story-page">
+  <section class="story-hero">
+    <div class="story-shell story-hero-grid">
+      <div class="story-hero-copy">
+        <p class="story-kicker">Notre histoire · SR BRAND</p>
+        <h1 class="story-display">Une marque pensée pour se sentir belle, simplement.</h1>
+        <p class="story-lead">SR BRAND est né d’une idée simple : proposer un univers féminin où le style reste clair, les couleurs ont une vraie place et chaque détail aide à choisir avec confiance.</p>
+        <div class="story-signature">Féminité · Confiance · Détail</div>
+      </div>
+      <div class="story-collage" aria-label="Univers visuel SR BRAND">
+        <div class="story-photo main"><img src="static/images/collections/ensemble-nuit-kimono/ensemble-nuit-blush-1.webp" alt="Ensemble nuit rose SR BRAND"></div>
+        <div class="story-photo small-a"><img src="static/images/collections/lingerie-v/lingerie-rose-1.webp" alt="Ensemble lingerie satin rose SR BRAND"></div>
+        <div class="story-photo small-b"><img src="static/images/collections/danse/danse-green-1.webp" alt="Tenue danse verte SR BRAND"></div>
+        <div class="story-note"><strong>Le détail compte.</strong>Une coupe, une matière, une couleur : notre univers se construit dans les petites choses que l’on remarque tout de suite.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="manifesto">
+    <div class="story-shell manifesto-grid">
+      <div><div class="manifesto-number">SR</div></div>
+      <div>
+        <p class="story-kicker">01 — Notre vision</p>
+        <h2 class="story-display">Moins de confusion. Plus de plaisir à choisir.</h2>
+        <div class="manifesto-copy">
+          <p>Nous voulons que la boutique ressemble à une sélection, pas à un catalogue sans fin. Des modèles avec une vraie personnalité, présentés proprement et dans plusieurs couleurs pour que chacune puisse se projeter.</p>
+          <p>Chez SR BRAND, une couleur n’est pas juste un petit cercle sous une photo. Elle fait partie du modèle. C’est pour cela que nous accordons autant d’importance aux visuels, aux différentes vues et à la cohérence de chaque collection.</p>
+          <p>Notre univers passe du satin doux aux pièces plus audacieuses, du confort quotidien aux looks qui se remarquent. Le fil conducteur reste le même : une féminité assumée, moderne et accessible.</p>
+          <p>Nous avançons collection après collection, en gardant ce qui nous ressemble : de belles matières visuelles, des détails soignés et une expérience simple du premier regard jusqu’à la commande.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="story-feature">
+    <div class="story-shell feature-wrap">
+      <div class="feature-intro">
+        <div>
+          <p class="story-kicker">Entre l'idée et le choix</p>
+          <h2 class="story-display">Une boutique qui doit donner envie avant même le premier clic.</h2>
+          <p>Nous pensons SR BRAND comme un univers à parcourir : des images qui racontent le produit, des couleurs qui changent l'ambiance et une présentation qui reste simple. Chaque nouvelle collection vient ajouter une nouvelle facette à cette histoire.</p>
+        </div>
+        <div class="feature-sign">SR BRAND · Maroc · Depuis 2026</div>
+      </div>
+      <div class="feature-cards">
+        <article class="feature-card"><div class="feature-num">01</div><div><h3>Le coup de cœur</h3><p>Un modèle doit avoir quelque chose qui se remarque dès la première image.</p></div></article>
+        <article class="feature-card dark"><div class="feature-num">02</div><div><h3>Le bon détail</h3><p>Une matière, un ruban, une finition ou une couleur peuvent transformer toute une silhouette.</p></div></article>
+        <div class="feature-photo"><img src="static/images/collections/lingerie-v/lingerie-rose-1.webp" alt="Détail lingerie satin SR BRAND"><span>Le détail signature</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="story-process">
+    <div class="story-shell">
+      <div class="story-process-head">
+        <div><p class="story-kicker">02 — Notre façon de faire</p><h2 class="story-display">Trois idées derrière chaque collection.</h2></div>
+        <p class="story-lead" style="color:#aaa;margin:0">Une sélection qui commence par l’envie, passe par le détail et se termine par une présentation claire.</p>
+      </div>
+      <div class="process-grid">
+        <article class="process-card"><span>01</span><h3>Choisir avec envie</h3><p>Nous privilégions les modèles qui ont une silhouette, une matière ou un détail capable de créer un vrai coup de cœur.</p></article>
+        <article class="process-card"><span>02</span><h3>Montrer les couleurs</h3><p>Rose, noir, rouge, mauve, blanc… chaque teinte doit être visible pour que le choix soit simple et concret.</p></article>
+        <article class="process-card"><span>03</span><h3>Soigner l’expérience</h3><p>Photos, variantes, panier et commande : chaque étape doit rester lisible, fluide et agréable sur mobile comme sur ordinateur.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="story-mosaic">
+    <div class="story-shell">
+      <div class="mosaic-head">
+        <div><p class="story-kicker">03 — Notre univers</p><h2 class="story-display">Des pièces différentes, une même signature.</h2></div>
+        <p class="story-lead" style="margin:0">Du romantique au glamour, du quotidien au plus audacieux : SR BRAND aime changer d’ambiance sans perdre son identité.</p>
+      </div>
+      <div class="mosaic-grid">
+        <div class="mosaic-item one"><img src="static/images/collections/danse/danse-green-1.webp" alt="Collection prestige verte"><span class="mosaic-label">Prestige</span></div>
+        <div class="mosaic-item two"><img src="static/images/collections/lingerie-v/lingerie-violet-1.webp" alt="Lingerie satin violet"><span class="mosaic-label">Satin</span></div>
+        <div class="mosaic-item three"><img src="static/images/collections/robe-dentelle/robe-dentelle-bordo-1.webp" alt="Robe de nuit bordo"><span class="mosaic-label">Douceur</span></div>
+        <div class="mosaic-item four"><img src="static/images/collections/ensemble-nuit-kimono/ensemble-nuit-black-1.webp" alt="Ensemble nuit noir"><span class="mosaic-label">Élégance</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="story-values">
+    <div class="story-shell">
+      <div class="values-head"><p class="story-kicker">04 — Ce qui nous guide</p><h2 class="story-display">Nos valeurs, sans grand discours.</h2><p>Des principes simples que nous voulons faire sentir dans chaque page, chaque collection et chaque commande.</p></div>
+      <div class="values-grid">
+        <article class="value-card"><div class="value-icon">01</div><div><h3>Clarté</h3><p>Des informations simples, des couleurs visibles et un parcours d’achat qui va droit au but.</p></div></article>
+        <article class="value-card"><div class="value-icon">02</div><div><h3>Féminité</h3><p>Une féminité libre : parfois douce, parfois chic, parfois audacieuse — toujours choisie.</p></div></article>
+        <article class="value-card"><div class="value-icon">03</div><div><h3>Confiance</h3><p>Voir clairement ce que l’on choisit, comprendre sa commande et garder une expérience simple jusqu’au bout.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="story-quote">
+    <div class="story-shell quote-box">
+      <div class="quote-mark">“</div>
+      <blockquote>Le bon modèle, ce n’est pas seulement celui qu’on trouve beau. C’est celui dans lequel on se reconnaît.</blockquote>
+      <p>La philosophie SR BRAND</p>
+    </div>
+  </section>
+
+  <section class="story-cta">
+    <div class="story-shell">
+      <div class="cta-panel">
+        <div><p class="story-kicker" style="color:#d9aa81">La suite de l’histoire</p><h2 class="story-display">Notre histoire continue dans chaque nouvelle collection.</h2><p>Découvrez les modèles, comparez les couleurs et trouvez celui qui vous ressemble.</p></div>
+        <div class="cta-actions"><a class="story-btn light" href="boutique.html">Découvrir la boutique</a><a class="story-btn outline" href="blog.html">Voir nos articles</a></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div><a class="logo footer-logo" href="index.html">SR BRAND</a><p>Une boutique moderne, élégante et personnalisable.</p></div>
+    <div><h4>Navigation</h4><a href="index.html">Accueil</a><a href="boutique.html">Boutique</a><a href="histoire.html">Histoire</a><a href="blog.html">Blogs</a><a href="contact.html">Contact</a><a href="panier.html">Panier</a></div>
+    <div><h4>Politiques</h4><a href="livraison.html">Livraison</a><a href="retours.html">Retours</a><a href="conditions.html">Conditions</a><a href="confidentialite.html">Confidentialité</a></div>
+    <div><h4>Contact</h4><p id="footerEmail">srbrand768@gmail.com</p><p id="footerWhatsapp">+212 727-951624</p><p id="footerAddress">Maroc</p><a class="footer-instagram-link" href="https://www.instagram.com/srbrand.ma/" target="_blank" rel="noopener noreferrer">Instagram · @srbrand.ma</a></div>
+  </div>
+  <div class="container footer-bottom"><span>© <span id="year"></span> <span id="footerBrand">SR BRAND</span>. Tous droits réservés.</span><span>Site dynamique & personnalisable</span></div>
+</footer>
+<script src="site.js?v=20260904-full-audit-1"></script>
+</body>
+</html>
