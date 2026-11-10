@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SR BRAND — Dashboard</title>
+  <link rel="stylesheet" href="styles.css?v=20260904-popup-gallery-clean-1">
+</head>
+<body class="admin-body">
+  <main class="admin-shell">
+    <section id="adminLogin" class="admin-login-card">
+      <div class="admin-brand">SR BRAND</div>
+      <p class="eyebrow">ESPACE PRIVÉ</p>
+      <h1>Dashboard SR BRAND</h1>
+      <p>Connectez-vous pour voir les commandes et les abonnés newsletter du site.</p>
+      <form id="adminLoginForm" class="admin-login-form">
+        <label>Mot de passe</label>
+        <input name="password" type="password" autocomplete="current-password" required>
+        <button class="button button-dark full" type="submit">Se connecter</button>
+        <p id="adminLoginError" class="admin-error"></p>
+      </form>
+    </section>
+
+    <section id="adminPanel" hidden>
+      <header class="admin-header">
+        <div>
+          <p class="eyebrow">SR BRAND</p>
+          <h1>Commandes</h1>
+          <p id="adminSubtitle">Chargement...</p>
+        </div>
+        <div class="admin-header-actions">
+          <button id="adminRefresh" class="button button-light">Actualiser</button>
+          <button id="adminLogout" class="button button-dark">Déconnexion</button>
+        </div>
+      </header>
+
+      <div class="admin-stats">
+        <article><span>Nouvelles</span><strong id="statPending">0</strong></article>
+        <article><span>Total commandes</span><strong id="statOrders">0</strong></article>
+        <article><span>Chiffre total</span><strong id="statRevenue">0 DH</strong></article>
+        <article><span>Abonnés newsletter</span><strong id="statNewsletter">0</strong></article>
+      </div>
+
+      <div id="adminOrders" class="admin-orders"></div>
+
+      <section class="admin-newsletter-section">
+        <div class="admin-section-heading">
+          <div>
+            <p class="eyebrow">COMMUNAUTÉ SR BRAND</p>
+            <h2>Abonnés Newsletter</h2>
+            <p id="newsletterSubtitle">Chargement...</p>
+          </div>
+        </div>
+        <div id="adminNewsletter" class="admin-newsletter-list"></div>
+      </section>
+
+      <section class="admin-password-card">
+        <h2>Changer le mot de passe</h2>
+        <form id="adminPasswordForm">
+          <input name="current_password" type="password" placeholder="Mot de passe actuel" required>
+          <input name="new_password" type="password" placeholder="Nouveau mot de passe (10 caractères min.)" minlength="10" required>
+          <button class="button button-light" type="submit">Modifier</button>
+          <span id="passwordStatus"></span>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const $ = selector => document.querySelector(selector);
+    const statusLabels = {
+      pending: 'Nouvelle',
+      confirmed: 'Confirmée',
+      shipped: 'Expédiée',
+      delivered: 'Livrée',
+      cancelled: 'Annulée'
+    };
+
+    const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    })[character]);
+
+    const safeImageUrl = value => {
+      const path = String(value || '').replace(/^\/+/, '');
+      return path.startsWith('static/images/') ? `/${encodeURI(path)}` : '';
+    };
+
+    const fmtDate = value => {
+      if (!value) return '';
+      const date = new Date(value.replace(' ', 'T') + 'Z');
+      return date.toLocaleString('fr-FR', {dateStyle: 'short', timeStyle: 'short'});
+    };
+
+    async function api(path, options = {}) {
+      const response = await fetch('/api/admin' + path, {
+        headers: {'Content-Type': 'application/json', ...(options.headers || {})},
+        ...options
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw Object.assign(new Error(data.error || 'Erreur'), {status: response.status});
+      }
+      return data;
+    }
+
+    function showLogin() {
+      $('#adminLogin').hidden = false;
+      $('#adminPanel').hidden = true;
+    }
+
+    function showPanel() {
+      $('#adminLogin').hidden = true;
+      $('#adminPanel').hidden = false;
+      loadDashboard();
+    }
+
+    function orderItemHtml(item) {
+      const name = item.name || ('Produit ' + item.product_id);
+      const image = safeImageUrl(item.image);
+      const quantity = Math.max(1, Number(item.quantity) || 1);
+      const lineTotal = Math.round(Number(item.price || 0) * quantity);
+      return `<div class="admin-order-item">
+        <div class="admin-item-media">${image
+          ? `<img src="${image}" alt="${escapeHtml(name)}" loading="lazy">`
+          : '<span>SR</span>'}
+        </div>
+        <div class="admin-item-copy">
+          <span><strong>${quantity}×</strong> ${escapeHtml(name)}</span>
+          <small>${escapeHtml(item.color || '-')} · Taille ${escapeHtml(item.size || '-')}</small>
+        </div>
+        <strong class="admin-item-total">${lineTotal} DH</strong>
+      </div>`;
+    }
+
+    function orderHtml(order) {
+      const firstName = order.customer_first_name || ((order.customer_name || '').split(' ')[0] || 'Client');
+      const lastName = order.customer_last_name || ((order.customer_name || '').split(' ').slice(1).join(' '));
+      const statuses = Object.entries(statusLabels).map(([value, label]) =>
+        `<option value="${value}" ${value === order.status ? 'selected' : ''}>${label}</option>`
+      ).join('');
+
+      return `<article class="admin-order-card">
+        <div class="admin-order-top">
+          <div>
+            <span class="admin-order-id">#${Number(order.id) || 0}</span>
+            <h2>${escapeHtml(firstName)} ${escapeHtml(lastName)}</h2>
+            <p>${escapeHtml(fmtDate(order.created_at))}</p>
+            <span class="admin-order-method ${order.order_method==='whatsapp'?'is-whatsapp':'is-site'}">${order.order_method==='whatsapp'?'WhatsApp':'Site'}</span>
+          </div>
+          <div>
+            <strong>${Math.round(Number(order.total || 0))} DH</strong>
+            <select class="admin-status" data-order="${Number(order.id) || 0}">${statuses}</select>
+          </div>
+        </div>
+        <div class="admin-customer">
+          <span><strong>Téléphone :</strong> <a href="tel:${escapeHtml(order.customer_phone)}">${escapeHtml(order.customer_phone)}</a></span>
+          <span><strong>Adresse :</strong> ${escapeHtml(order.customer_address)}</span>
+        </div>
+        <div class="admin-order-items">${(order.items || []).map(orderItemHtml).join('')}</div>
+      </article>`;
+    }
+
+    function newsletterHtml(item) {
+      const email = escapeHtml(item.email || '');
+      return `<article class="admin-newsletter-row">
+        <div class="admin-newsletter-avatar">@</div>
+        <div class="admin-newsletter-copy">
+          <strong>${email}</strong>
+          <span>Inscrit le ${escapeHtml(fmtDate(item.subscribed_at))}</span>
+        </div>
+        <a class="admin-newsletter-mail" href="mailto:${email}" title="Envoyer un e-mail">Écrire</a>
+      </article>`;
+    }
+
+    async function loadNewsletter() {
+      try {
+        const subscribers = await api('/newsletter');
+        $('#statNewsletter').textContent = subscribers.length;
+        $('#newsletterSubtitle').textContent =
+          `${subscribers.length} adresse${subscribers.length > 1 ? 's' : ''} e-mail enregistrée${subscribers.length > 1 ? 's' : ''}`;
+
+        const host = $('#adminNewsletter');
+        if (!subscribers.length) {
+          host.innerHTML = '<div class="admin-empty"><h2>Aucun abonné</h2><p>Les nouvelles inscriptions à la newsletter apparaîtront ici.</p></div>';
+          return;
+        }
+        host.innerHTML = subscribers.map(newsletterHtml).join('');
+      } catch (error) {
+        if (error.status === 401) showLogin();
+        else $('#adminNewsletter').innerHTML =
+          `<div class="admin-empty"><p>${escapeHtml(error.message)}</p></div>`;
+      }
+    }
+
+    async function loadDashboard() {
+      await Promise.all([loadOrders(), loadNewsletter()]);
+    }
+
+    async function loadOrders() {
+      try {
+        const orders = await api('/orders');
+        $('#adminSubtitle').textContent = `${orders.length} commande${orders.length > 1 ? 's' : ''} enregistrée${orders.length > 1 ? 's' : ''}`;
+        $('#statPending').textContent = orders.filter(order => order.status === 'pending').length;
+        $('#statOrders').textContent = orders.length;
+        $('#statRevenue').textContent = `${Math.round(orders
+          .filter(order => order.status !== 'cancelled')
+          .reduce((sum, order) => sum + Number(order.total || 0), 0))} DH`;
+
+        const host = $('#adminOrders');
+        if (!orders.length) {
+          host.innerHTML = '<div class="admin-empty"><h2>Aucune commande</h2><p>Les nouvelles commandes apparaîtront ici automatiquement.</p></div>';
+          return;
+        }
+
+        host.innerHTML = orders.map(orderHtml).join('');
+        document.querySelectorAll('.admin-status').forEach(select => {
+          select.onchange = async () => {
+            select.disabled = true;
+            try {
+              await api(`/orders/${select.dataset.order}/status`, {
+                method: 'POST',
+                body: JSON.stringify({status: select.value})
+              });
+              await loadOrders();
+            } catch (error) {
+              alert(error.message);
+            } finally {
+              select.disabled = false;
+            }
+          };
+        });
+      } catch (error) {
+        if (error.status === 401) showLogin();
+        else $('#adminOrders').innerHTML = `<div class="admin-empty"><p>${escapeHtml(error.message)}</p></div>`;
+      }
+    }
+
+    $('#adminLoginForm').onsubmit = async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const password = new FormData(form).get('password');
+      $('#adminLoginError').textContent = '';
+      try {
+        await api('/login', {method: 'POST', body: JSON.stringify({password})});
+        form.reset();
+        showPanel();
+      } catch (error) {
+        $('#adminLoginError').textContent = error.message;
+      }
+    };
+
+    $('#adminRefresh').onclick = loadDashboard;
+    $('#adminLogout').onclick = async () => {
+      await api('/logout', {method: 'POST'});
+      showLogin();
+    };
+
+    $('#adminPasswordForm').onsubmit = async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const data = Object.fromEntries(new FormData(form));
+      const status = $('#passwordStatus');
+      status.textContent = '';
+      try {
+        await api('/password', {method: 'POST', body: JSON.stringify(data)});
+        status.textContent = 'Mot de passe modifié ✓';
+        form.reset();
+      } catch (error) {
+        status.textContent = error.message;
+      }
+    };
+
+    (async () => {
+      try {
+        const me = await api('/me');
+        me.logged_in ? showPanel() : showLogin();
+      } catch {
+        showLogin();
+      }
+    })();
+  </script>
+</body>
+</html>
