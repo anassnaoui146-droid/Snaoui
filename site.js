@@ -14,167 +14,161 @@ const COLORS=['red','blue','green','white','black'];
 const COLOR_LABELS={red:'Rouge',blue:'Bleu',green:'Vert Émeraude',pink:'Magenta',blush:'Rose poudré',rose:'Rose',purple:'Mauve',mauve:'Mauve grisé',violet:'Violet',bordo:'Bordo',white:'Blanc',black:'Noir',beige:'Beige',sky:'Blanc',assorted:'Couleurs assorties',redwhite:'Rouge & Blanc'};
 const COLOR_HEX={red:'#b41022',blue:'#173a76',green:'#08765d',pink:'#d62972',blush:'#d8a6ad',rose:'#efa5b2',purple:'#b69ac3',mauve:'#9f929d',violet:'#963d79',bordo:'#650018',white:'#f7f7f4',black:'#171717',beige:'#e8d2bc',sky:'#c9dcf8',assorted:'linear-gradient(135deg,#171717 0 25%,#a7192e 25% 50%,#f2d6d8 50% 75%,#f7f1e8 75%)',redwhite:'linear-gradient(135deg,#ffffff 0 48%,#c81f2c 48% 100%)'};
 
-// ===== IMAGES : un seul endroit pour changer le dossier des photos =====
-// Mets ici le dossier qui contient tes .webp (ex: 'static/images/' ou 'images/' ou '' si à côté de index.html)
-const IMG_BASE='static/images/';
-const imgUrl=f=>(!f||/^(https?:|data:|blob:|\/|static\/|images\/)/.test(f))?f:IMG_BASE+f;
+/* ============================================================
+   SR BRAND — IMAGES (TOUT SE PASSE ICI)
+   ------------------------------------------------------------
+   1) IMG_BASE      : dossier où se trouvent tes photos.
+                      ''  = à côté des fichiers .html (ton cas actuel, comme blog.html)
+                      'static/images/' = si tu les déplaces dans ce dossier
+   2) PHOTO_SETS    : chaque série de photos  →  'nom-du-fichier-sans-numéro': nombre de vues
+                      ex: 'maid-black':5  =  maid-black-1.webp … maid-black-5.webp
+   3) PHOTO_FILES   : exceptions (fichiers qui ne sont pas en .webp)
+   4) Dans n'importe quelle page HTML (index, blog, article, histoire…) :
+        <img data-photo="maid-black-1" alt="...">
+      → l'image s'affiche automatiquement depuis ce fichier. Aucun chemin à écrire.
+   Si une photo est introuvable à l'endroit prévu, le site essaie
+   automatiquement les autres dossiers (FALLBACK_BASES / dossiers collections).
+   ============================================================ */
+const IMG_BASE='';
+const FALLBACK_BASES=['','static/images/','images/'];
+
+// Séries de photos : 'préfixe': nombre de vues (préfixe-1.webp … préfixe-N.webp)
+const PHOTO_SETS={
+  'danse-green':5,'danse-pink':5,
+  'shorts-compression-beige-pro':5,'shorts-compression-black-pro':5,
+  'maid-black':5,'maid-red':5,
+  'robe-dentelle-purple':5,'robe-dentelle-bordo':5,'robe-dentelle-red':5,'robe-dentelle-white':5,'robe-dentelle-black':5,
+  'pack-7-culottes':4,
+  'infirmiere-flatlay':5,
+  'ensemble-nuit-blush':5,'ensemble-nuit-mauve':5,'ensemble-nuit-red':5,'ensemble-nuit-black':5,'ensemble-nuit-white':5,
+  'lingerie-rose':5,'lingerie-beige':5,'lingerie-sky':5,'lingerie-violet':5,'lingerie-red':5,'lingerie-black':5,
+  'short-gainant-beige':6,'short-gainant-black':6
+};
+// Fichiers avec une extension différente de .webp
+const PHOTO_FILES={
+  'home-histoire-kimono-photo':'home-histoire-kimono-photo.png'
+};
+// Ancien dossier de chaque collection (utilisé seulement en secours)
+const COLLECTION_FOLDERS=[
+  ['danse','danse'],['maid','maid'],['robe-dentelle','robe-dentelle'],['shorts-compression','compression'],
+  ['pack-7','culottes'],['infirmiere','infirmiere'],['ensemble-nuit','ensemble-nuit-kimono'],['lingerie','lingerie-v']
+];
+
+const isAbsoluteUrl=f=>/^(https?:|data:|blob:|\/\/)/.test(f||'');
+const baseName=f=>String(f||'').split(/[?#]/)[0].split('/').pop();
+const photoFile=k=>{const n=baseName(k);return PHOTO_FILES[n]||(/\.[a-z0-9]{3,4}$/i.test(n)?n:n+'.webp')};
+const photoSet=prefix=>Array.from({length:PHOTO_SETS[prefix]||0},(_,i)=>`${prefix}-${i+1}`);
+const imgUrl=f=>(!f||isAbsoluteUrl(f))?f:IMG_BASE+photoFile(f);
+// Liste des chemins à essayer pour une photo (le premier est le bon, les autres = secours)
+function imgCandidates(f){
+  const file=photoFile(f),list=[IMG_BASE+file];
+  FALLBACK_BASES.forEach(b=>list.push(b+file));
+  const folder=(COLLECTION_FOLDERS.find(([prefix])=>file.startsWith(prefix))||[])[1];
+  if(folder)list.push(`static/images/collections/${folder}/${file}`);
+  return [...new Set(list)];
+}
+// Affiche une photo dans un <img> (avec secours automatique)
+function setPhoto(img,key){img.dataset.imgTry='0';img.src=imgUrl(key)}
+// Cherche le premier chemin qui marche (pour les fonds d'image du slider)
+function loadBestImage(key,cb){
+  const list=imgCandidates(key);let i=0;
+  const next=()=>{if(i>=list.length)return;const url=list[i++],t=new Image();t.onload=()=>cb(url);t.onerror=next;t.src=url};
+  next();
+}
+// Toutes les <img data-photo="..."> des pages HTML
+function renderPagePhotos(scope=document){
+  [...scope.querySelectorAll('img[data-photo]')].forEach(img=>{if(!img.getAttribute('src'))setPhoto(img,img.dataset.photo)});
+}
+// Secours global : si une image ne charge pas, on essaie le chemin suivant
+document.addEventListener('error',e=>{
+  const el=e.target;if(!el||el.tagName!=='IMG')return;
+  const src=el.getAttribute('src')||'';
+  if(!src||isAbsoluteUrl(src)||!/\.(webp|png|jpe?g)(\?|#|$)/i.test(src))return;
+  const list=imgCandidates(src),next=Number(el.dataset.imgTry||0)+1;
+  if(next<list.length){el.dataset.imgTry=String(next);el.src=list[next]}
+},true);
+document.addEventListener('load',e=>{if(e.target&&e.target.tagName==='IMG')delete e.target.dataset.imgTry},true);
+
 const mapObj=(o,fn)=>Object.fromEntries(Object.entries(o||{}).map(([k,v])=>[k,fn(v)]));
 const withImages=p=>({...p,image:imgUrl(p.image),colorImages:mapObj(p.colorImages,imgUrl),galleries:mapObj(p.galleries,a=>a.map(imgUrl))});
+
+// Construit un produit à partir de ses séries de photos : sets:{couleur:'série'}
+function buildProduct(p){
+  const galleries=mapObj(p.sets,photoSet);
+  const colorImages={...mapObj(galleries,g=>g[0]),...(p.cardImages||{})};
+  const {sets,cardImages,...rest}=p;
+  return {...rest,galleries,colorImages,image:colorImages[p.color[0]]};
+}
 
 const LOCAL_PRODUCTS=[
   {
     id:4,name:'Ensemble Danse Orientale Prestige',category:'ensemble',categoryLabel:'ENSEMBLE DANSE ORIENTALE',price:279,badge:'NOUVEAUTÉ',rating:4.9,reviews:18,
-    image:'green-1.webp',
     description:'Ensemble 3 pièces avec haut orné de franges dorées, jupe longue fendue et manches fluides. Une silhouette glamour pensée pour les spectacles, soirées et événements.',
     details:['Ensemble 3 pièces','Finitions dorées à franges','Jupe longue avec fentes hautes','Manches longues fluides en voile','Disponible en deux couleurs : Vert Émeraude et Rose'],
     sizes:['S','M','L','XL'],color:['green','rose'],
-    colorImages:{green:'danse-green-1.webp',rose:'danse-pink-1.webp'},
-    galleries:{
-      green:['danse-green-1.webp','danse-green-2.webp','danse-green-3.webp','danse-green-4.webp','danse-green-5.webp'],
-      rose:['danse-pink-1.webp','danse-pink-2.webp','danse-pink-3.webp','danse-pink-4.webp','danse-pink-5.webp']
-    }
+    sets:{green:'danse-green',rose:'danse-pink'}
   },
   {
     id:5,name:'Shorts de compression femme',category:'compression',categoryLabel:'SHORTS DE COMPRESSION',price:199,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'shorts-compression-beige-pro-1.webp',
     description:'Short de compression femme taille haute, à la coupe près du corps, proposé en beige et en noir avec une finition lisse et invisible sous les vêtements.',
     details:['Taille haute gainante','Coupe près du corps','Design ouvert à l’arrière','Disponible en Beige et Noir','Taille standard'],
     sizes:['M/L','XL','XXL'],color:['beige','black'],
-    colorImages:{beige:'shorts-compression-beige-pro-1.webp',black:'shorts-compression-black-pro-1.webp'},
-    galleries:{
-      beige:['shorts-compression-beige-pro-1.webp','shorts-compression-beige-pro-2.webp','shorts-compression-beige-pro-3.webp','shorts-compression-beige-pro-4.webp','shorts-compression-beige-pro-5.webp'],
-      black:['shorts-compression-black-pro-1.webp','shorts-compression-black-pro-2.webp','shorts-compression-black-pro-3.webp','shorts-compression-black-pro-4.webp','shorts-compression-black-pro-5.webp']
-    }
+    sets:{beige:'shorts-compression-beige-pro',black:'shorts-compression-black-pro'}
   },
   {
     id:6,name:'Ensemble Maid Satin Prestige',category:'ensemble',categoryLabel:'ENSEMBLE MAID SATIN',price:229,badge:'NOUVEAUTÉ',rating:0,reviews:0,
-    image:'maid-black-1.webp',
     description:'Un ensemble coordonné au style maid raffiné, mêlant satin lumineux, dentelle ivoire et détails délicats. Une création complète pensée pour une présentation élégante et premium.',
     details:['Corset satiné structuré avec laçage ivoire','Jupe évasée avec tablier bordé de dentelle','Ras-de-cou et deux bandes à nœuds assorties','Bretelles réglables et finitions soignées','Disponible en Noir et Rouge'],
     sizes:['Standard'],color:['black','red'],
-    colorImages:{black:'maid-black-1.webp',red:'maid-red-1.webp'},
-    galleries:{
-      black:['maid-black-1.webp','maid-black-2.webp','maid-black-3.webp','maid-black-4.webp','maid-black-5.webp'],
-      red:['maid-red-1.webp','maid-red-2.webp','maid-red-3.webp','maid-red-4.webp','maid-red-5.webp']
-    }
+    sets:{black:'maid-black',red:'maid-red'}
   },
   {
     id:7,name:'Robe de Nuit Satin & Dentelle',category:'chemise',categoryLabel:'ROBE DE NUIT',price:200,badge:'NOUVEAUTÉ',rating:0,reviews:0,
-    image:'robe-dentelle-purple-1.webp',
     description:'Une robe de nuit fluide en satin lumineux, sublimée par un haut et une finition de bas en dentelle florale. Sa coupe élégante et confortable accompagne les soirées avec douceur.',
     details:['Satin doux et fluide','Haut en dentelle florale','Bretelles fines réglables','Large finition en dentelle au bas','Disponible en Mauve, Bordo, Rouge, Blanc et Noir'],
     sizes:['S','M','L','XL','XXL'],color:['purple','bordo','red','white','black'],
-    colorImages:{purple:'robe-dentelle-purple-1.webp',bordo:'robe-dentelle-bordo-1.webp',red:'robe-dentelle-red-1.webp',white:'robe-dentelle-white-1.webp',black:'robe-dentelle-black-1.webp'},
-    galleries:{
-      purple:['robe-dentelle-purple-1.webp','robe-dentelle-purple-2.webp','robe-dentelle-purple-3.webp','robe-dentelle-purple-4.webp','robe-dentelle-purple-5.webp'],
-      bordo:['robe-dentelle-bordo-1.webp','robe-dentelle-bordo-2.webp','robe-dentelle-bordo-3.webp','robe-dentelle-bordo-4.webp','robe-dentelle-bordo-5.webp'],
-      red:['robe-dentelle-red-1.webp','robe-dentelle-red-2.webp','robe-dentelle-red-3.webp','robe-dentelle-red-4.webp','robe-dentelle-red-5.webp'],
-      white:['robe-dentelle-white-1.webp','robe-dentelle-white-2.webp','robe-dentelle-white-3.webp','robe-dentelle-white-4.webp','robe-dentelle-white-5.webp'],
-      black:['robe-dentelle-black-1.webp','robe-dentelle-black-2.webp','robe-dentelle-black-3.webp','robe-dentelle-black-4.webp','robe-dentelle-black-5.webp']
-    }
+    sets:{purple:'robe-dentelle-purple',bordo:'robe-dentelle-bordo',red:'robe-dentelle-red',white:'robe-dentelle-white',black:'robe-dentelle-black'}
   },
   {
     id:8,name:'Pack de 7 Culottes Coton Femme',category:'culotte',categoryLabel:'PACK DE CULOTTES',price:180,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'pack-7-culottes-1.webp',
     description:'Un pack pratique de 7 culottes femme en coton doux, proposé dans un assortiment élégant de couleurs unies et de motifs délicats pour toute la semaine.',
     details:['Pack complet de 7 pièces','Coton doux et respirant','Coupe confortable avec bonne couvrance','Couleurs et motifs assortis','Disponible du S au XXL'],
     sizes:['S','M','L','XL','XXL'],color:['assorted'],
     kicker:'SR BRAND · PACK DE 7',
-    colorImages:{assorted:'pack-7-culottes-1.webp'},
-    galleries:{
-      assorted:['pack-7-culottes-1.webp','pack-7-culottes-2.webp','pack-7-culottes-3.webp','pack-7-culottes-4.webp']
-    }
-  }
-  ,{
+    sets:{assorted:'pack-7-culottes'}
+  },
+  {
     id:9,name:'Ensemble Infirmière Rouge & Blanc',category:'ensemble',categoryLabel:'ENSEMBLE INFIRMIÈRE',price:229,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'infirmiere-flatlay-1.webp',
     description:'Ensemble infirmière rouge et blanc avec bonnet assorti, haut noué et jupe courte bordée de dentelle rouge. Présenté avec plusieurs vues pour mieux voir les détails du modèle.',
     details:['Ensemble rouge et blanc','Bonnet assorti inclus','Haut avec liens à nouer','Jupe courte avec finition en dentelle rouge','Disponible en tailles S/M et L/XL'],
     sizes:['S/M','L/XL'],color:['redwhite'],
-    colorImages:{redwhite:'infirmiere-flatlay-1.webp'},
-    galleries:{
-      redwhite:['infirmiere-flatlay-1.webp','infirmiere-flatlay-2.webp','infirmiere-flatlay-3.webp','infirmiere-flatlay-4.webp','infirmiere-flatlay-5.webp']
-    }
+    sets:{redwhite:'infirmiere-flatlay'}
   },
   {
     id:10,name:'Ensemble Nuit Dentelle & Kimono',category:'ensemble',categoryLabel:'ENSEMBLE DE NUIT',price:229,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'ensemble-nuit-blush-1.webp',
     description:'Un ensemble de nuit deux pièces composé d’une nuisette fluide à bretelles fines et d’un kimono long assorti. La dentelle florale, les manches évasées et les finitions délicates créent une silhouette douce et élégante.',
     details:['Ensemble deux pièces : nuisette et kimono long','Dentelle florale sur le décolleté, la taille et les poignets','Voile fluide avec manches larges évasées','Disponible en Rose poudré, Mauve grisé, Rouge, Noir et Blanc','Taille Standard'],
     sizes:['Standard'],color:['blush','mauve','red','black','white'],
-    colorImages:{
-      blush:'ensemble-nuit-blush-1.webp',
-      mauve:'ensemble-nuit-mauve-1.webp',
-      red:'ensemble-nuit-red-1.webp',
-      black:'ensemble-nuit-black-1.webp',
-      white:'ensemble-nuit-white-1.webp'
-    },
-    galleries:{
-      blush:['ensemble-nuit-blush-1.webp','ensemble-nuit-blush-2.webp','ensemble-nuit-blush-3.webp','ensemble-nuit-blush-4.webp','ensemble-nuit-blush-5.webp'],
-      mauve:['ensemble-nuit-mauve-1.webp','ensemble-nuit-mauve-2.webp','ensemble-nuit-mauve-3.webp','ensemble-nuit-mauve-4.webp','ensemble-nuit-mauve-5.webp'],
-      red:['ensemble-nuit-red-1.webp','ensemble-nuit-red-2.webp','ensemble-nuit-red-3.webp','ensemble-nuit-red-4.webp','ensemble-nuit-red-5.webp'],
-      black:['ensemble-nuit-black-1.webp','ensemble-nuit-black-2.webp','ensemble-nuit-black-3.webp','ensemble-nuit-black-4.webp','ensemble-nuit-black-5.webp'],
-      white:['ensemble-nuit-white-1.webp','ensemble-nuit-white-2.webp','ensemble-nuit-white-3.webp','ensemble-nuit-white-4.webp','ensemble-nuit-white-5.webp']
-    }
+    sets:{blush:'ensemble-nuit-blush',mauve:'ensemble-nuit-mauve',red:'ensemble-nuit-red',black:'ensemble-nuit-black',white:'ensemble-nuit-white'}
   },
   {
     id:11,name:'Ensemble Lingerie Satin V',category:'ensemble',categoryLabel:'ENSEMBLE LINGERIE',price:150,bundleQty:3,bundlePrice:380,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'lingerie-rose-1.webp',
     description:'Un ensemble lingerie raffiné avec soutien-gorge rembourré, culotte assortie et harnais décoratif. Les détails métalliques en V apportent une finition élégante. Une pièce coûte 150 DH, avec une offre de trois pièces à 380 DH.',
     details:['Ensemble lingerie satiné avec détails métalliques en V','Soutien-gorge rembourré à bretelles réglables','Culotte assortie et harnais décoratif inclus','1 pièce : 150 DH · Offre 3 pièces : 380 DH','Disponible en Rose, Beige, Blanc, Violet, Rouge et Noir','Tailles S, M, L et XL'],
     sizes:['S','M','L','XL'],color:['rose','beige','sky','violet','red','black'],
     kicker:'SR BRAND · 6 COULEURS',
-    colorImages:{
-      rose:'lingerie-rose-1.webp',
-      beige:'lingerie-beige-1.webp',
-      sky:'lingerie-sky-1.webp',
-      violet:'lingerie-violet-1.webp',
-      red:'lingerie-red-1.webp',
-      black:'lingerie-black-1.webp'
-    },
-    galleries:{
-      rose:['lingerie-rose-1.webp','lingerie-rose-2.webp','lingerie-rose-3.webp','lingerie-rose-4.webp','lingerie-rose-5.webp'],
-      beige:['lingerie-beige-1.webp','lingerie-beige-2.webp','lingerie-beige-3.webp','lingerie-beige-4.webp','lingerie-beige-5.webp'],
-      sky:['lingerie-sky-1.webp','lingerie-sky-2.webp','lingerie-sky-3.webp','lingerie-sky-4.webp','lingerie-sky-5.webp'],
-      violet:['lingerie-violet-1.webp','lingerie-violet-2.webp','lingerie-violet-3.webp','lingerie-violet-4.webp','lingerie-violet-5.webp'],
-      red:['lingerie-red-1.webp','lingerie-red-2.webp','lingerie-red-3.webp','lingerie-red-4.webp','lingerie-red-5.webp'],
-      black:['lingerie-black-1.webp','lingerie-black-2.webp','lingerie-black-3.webp','lingerie-black-4.webp','lingerie-black-5.webp']
-    }
-  }
-  ,
+    sets:{rose:'lingerie-rose',beige:'lingerie-beige',sky:'lingerie-sky',violet:'lingerie-violet',red:'lingerie-red',black:'lingerie-black'}
+  },
   {
     id:12,name:'Short Gainant Taille Haute Sculptant',category:'compression',categoryLabel:'SHORT GAINANT SCULPTANT',price:180,badge:'NOUVEAU',rating:0,reviews:0,
-    image:'short-gainant-beige-2.webp',
     description:'Short gainant femme taille haute avec maintien du ventre, matière extensible et zones texturées pensées pour lisser la silhouette tout en restant confortable au quotidien.',
     details:['Taille haute gainante et maintien abdominal','Matière extensible et douce','Zones texturées sculptantes','Coupe mi-cuisse confortable','Disponible en Beige et Noir','Tailles M/L, XL/XXL et 3XL/4XL'],
     sizes:['M/L','XL/XXL','3XL/4XL'],color:['beige','black'],
     kicker:'SR BRAND · 2 COULEURS',
-    colorImages:{
-      beige:'short-gainant-beige-2.webp',
-      black:'short-gainant-black-2.webp'
-    },
-    galleries:{
-      beige:[
-        'short-gainant-beige-1.webp',
-        'short-gainant-beige-2.webp',
-        'short-gainant-beige-3.webp',
-        'short-gainant-beige-4.webp',
-        'short-gainant-beige-5.webp',
-        'short-gainant-beige-6.webp'
-      ],
-      black:[
-        'short-gainant-black-1.webp',
-        'short-gainant-black-2.webp',
-        'short-gainant-black-3.webp',
-        'short-gainant-black-4.webp',
-        'short-gainant-black-5.webp',
-        'short-gainant-black-6.webp'
-      ]
-    }
+    sets:{beige:'short-gainant-beige',black:'short-gainant-black'},
+    cardImages:{beige:'short-gainant-beige-2',black:'short-gainant-black-2'}
   }
-
-
-];
+].map(buildProduct);
 
 let PRODUCTS=LOCAL_PRODUCTS.map(withImages);
 let cart=JSON.parse(localStorage.getItem('srbrand_cart')||'[]');
@@ -198,14 +192,6 @@ function setActiveNav(){
   const a=document.querySelector(`[data-nav="${key}"]`);if(a)a.classList.add('active');
 }
 function initMobile(){const b=$('#mobileMenuBtn'),n=$('#mainNav');if(b&&n)b.addEventListener('click',()=>n.classList.toggle('open'))}
-function renderHomeStory(){
-  const m=$('#homeStoryMedia');if(!m||m.querySelector('img'))return;
-  const img=document.createElement('img');
-  img.src=imgUrl('static/images/home-histoire-kimono-photo.png');
-  img.alt='Modèle portant un ensemble nuit dentelle et kimono rose';
-  img.loading='lazy';
-  m.appendChild(img);
-}
 async function loadProducts(){PRODUCTS=LOCAL_PRODUCTS.map(withImages)}
 
 function colorDots(p){
@@ -1050,7 +1036,7 @@ function initHero(){
   let timer=null;
 
   wrap.innerHTML=slides.map((s,i)=>`<article class="hero-slide ${i?'':'active'}">
-    <div class="hero-image" style="background-image:url('${imgUrl(s.img)}');background-position:${s.pos||'center'};background-size:${s.size||'contain'};background-repeat:no-repeat;background-color:${s.bg||'#eee'}"></div>
+    <div class="hero-image" data-hero-img="${s.img}" style="background-position:${s.pos||'center'};background-size:${s.size||'contain'};background-repeat:no-repeat;background-color:${s.bg||'#eee'}"></div>
     <div class="shade"></div>
     <div class="hero-copy">
       <p class="eyebrow">${s.eyebrow}</p>
@@ -1059,6 +1045,8 @@ function initHero(){
       <a href="${s.link}" class="button button-light">${s.cta}</a>
     </div>
   </article>`).join('');
+
+  $$('.hero-image[data-hero-img]',wrap).forEach(el=>loadBestImage(el.dataset.heroImg,url=>{el.style.backgroundImage=`url('${url}')`}));
 
   const dots=$('#sliderDots');if(!dots)return;
   dots.innerHTML=slides.map((_,i)=>`<button class="${i?'':'active'}" data-slide="${i}" aria-label="Slide ${i+1}"></button>`).join('');
@@ -1081,4 +1069,4 @@ function initHero(){
 
   startAuto();
 }
-window.addEventListener('DOMContentLoaded',async()=>{initPage();initProfileSticker();await loadProducts();renderProducts('#productGrid',false);renderProducts('#featuredProducts',true);renderCartPage();renderCheckoutPage();renderProductDetail();initHero();renderHomeStory();initAccountPage()});
+window.addEventListener('DOMContentLoaded',async()=>{renderPagePhotos();initPage();initProfileSticker();await loadProducts();renderProducts('#productGrid',false);renderProducts('#featuredProducts',true);renderCartPage();renderCheckoutPage();renderProductDetail();initHero();initAccountPage()});
