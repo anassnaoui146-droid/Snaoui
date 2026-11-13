@@ -86,6 +86,7 @@ document.addEventListener('error',e=>{
   if(!src||isAbsoluteUrl(src)||!/\.(webp|png|jpe?g)(\?|#|$)/i.test(src))return;
   const list=imgCandidates(src),next=Number(el.dataset.imgTry||0)+1;
   if(next<list.length){el.dataset.imgTry=String(next);el.src=list[next]}
+  else console.warn(`[SR BRAND] Image introuvable : ${baseName(src)} — chemins essayés :`,list);
 },true);
 document.addEventListener('load',e=>{if(e.target&&e.target.tagName==='IMG')delete e.target.dataset.imgTry},true);
 
@@ -1069,4 +1070,18 @@ function initHero(){
 
   startAuto();
 }
-window.addEventListener('DOMContentLoaded',async()=>{renderPagePhotos();initPage();initProfileSticker();await loadProducts();renderProducts('#productGrid',false);renderProducts('#featuredProducts',true);renderCartPage();renderCheckoutPage();renderProductDetail();initHero();initAccountPage()});
+// Chaque étape est isolée : si une page n'a pas un élément, le reste continue de fonctionner
+const safeRun=(name,fn)=>{try{return fn()}catch(err){console.error(`[SR BRAND] Erreur dans ${name} :`,err)}};
+window.addEventListener('DOMContentLoaded',async()=>{
+  safeRun('renderPagePhotos',renderPagePhotos);   // <img data-photo="..."> (index, blog, articles, histoire)
+  safeRun('initPage',initPage);
+  safeRun('initProfileSticker',initProfileSticker);
+  await safeRun('loadProducts',loadProducts);
+  safeRun('renderProducts (boutique)',()=>renderProducts('#productGrid',false));
+  safeRun('renderProducts (accueil)',()=>renderProducts('#featuredProducts',true));
+  safeRun('renderCartPage',renderCartPage);
+  safeRun('renderCheckoutPage',renderCheckoutPage);
+  safeRun('renderProductDetail',renderProductDetail);
+  safeRun('initHero',initHero);
+  safeRun('initAccountPage',initAccountPage);
+});
