@@ -39,27 +39,11 @@ const COLOR_HEX={red:'#b41022',blue:'#173a76',green:'#08765d',pink:'#d62972',blu
 
 /* ============================================================
    SR BRAND — IMAGES (TOUT SE PASSE ICI)
-   ------------------------------------------------------------
-   1) IMG_BASE      : dossier où se trouvent tes photos.
-                      ''  = à côté des fichiers .html (ton cas actuel, comme blog.html)
-                      'static/images/' = si tu les déplaces dans ce dossier
-   2) PHOTO_SETS    : chaque série de photos  →  'nom-du-fichier-sans-numéro': nombre de vues
-                      ex: 'maid-black':5  =  maid-black-1.webp … maid-black-5.webp
-   3) PHOTO_FILES   : exceptions (fichiers qui ne sont pas en .webp)
-   4) Dans n'importe quelle page HTML (index, blog, article, histoire…) :
-        <img data-photo="maid-black-1" alt="...">
-      → l'image s'affiche automatiquement depuis ce fichier. Aucun chemin à écrire.
-   Si une photo est introuvable à l'endroit prévu, le site essaie
-   automatiquement les autres dossiers (FALLBACK_BASES / dossiers collections).
    ============================================================ */
 const IMG_BASE='';
 const FALLBACK_BASES=['','static/images/','images/'];
-// Dernier recours (optionnel) : adresse de ton site en ligne où les photos existent déjà.
-// Utile pour tester les pages EN LOCAL (double-clic sur le fichier) quand les photos ne sont pas dans ton dossier.
-// Exemple : const REMOTE_BASE='https://www.ton-site.com/';   (laisser '' en production)
 const REMOTE_BASE='';
 
-// Séries de photos : 'préfixe': nombre de vues (préfixe-1.webp … préfixe-N.webp)
 const PHOTO_SETS={
   'danse-green':5,'danse-pink':5,
   'shorts-compression-beige-pro':5,'shorts-compression-black-pro':5,
@@ -71,11 +55,9 @@ const PHOTO_SETS={
   'lingerie-rose':5,'lingerie-beige':5,'lingerie-sky':5,'lingerie-violet':5,'lingerie-red':5,'lingerie-black':5,
   'short-gainant-beige':6,'short-gainant-black':6
 };
-// Fichiers avec une extension différente de .webp
 const PHOTO_FILES={
   'home-histoire-kimono-photo':'home-histoire-kimono-photo.png'
 };
-// Ancien dossier de chaque collection (utilisé seulement en secours)
 const COLLECTION_FOLDERS=[
   ['danse','danse'],['maid','maid'],['robe-dentelle','robe-dentelle'],['shorts-compression','compression'],
   ['pack-7','culottes'],['infirmiere','infirmiere'],['ensemble-nuit','ensemble-nuit-kimono'],['lingerie','lingerie-v']
@@ -86,7 +68,7 @@ const baseName=f=>String(f||'').split(/[?#]/)[0].split('/').pop();
 const photoFile=k=>{const n=baseName(k);return PHOTO_FILES[n]||(/\.[a-z0-9]{3,4}$/i.test(n)?n:n+'.webp')};
 const photoSet=prefix=>Array.from({length:PHOTO_SETS[prefix]||0},(_,i)=>`${prefix}-${i+1}`);
 const imgUrl=f=>(!f||isAbsoluteUrl(f))?f:IMG_BASE+photoFile(f);
-// Liste des chemins à essayer pour une photo (le premier est le bon, les autres = secours)
+
 function imgCandidates(f){
   const file=photoFile(f),list=[IMG_BASE+file];
   FALLBACK_BASES.forEach(b=>list.push(b+file));
@@ -95,19 +77,15 @@ function imgCandidates(f){
   if(REMOTE_BASE)list.push(REMOTE_BASE+file);
   return [...new Set(list)];
 }
-// Affiche une photo dans un <img> (avec secours automatique)
 function setPhoto(img,key){img.dataset.imgTry='0';img.src=imgUrl(key)}
-// Cherche le premier chemin qui marche (pour les fonds d'image du slider)
 function loadBestImage(key,cb){
   const list=imgCandidates(key);let i=0;
   const next=()=>{if(i>=list.length)return;const url=list[i++],t=new Image();t.onload=()=>cb(url);t.onerror=next;t.src=url};
   next();
 }
-// Toutes les <img data-photo="..."> des pages HTML
 function renderPagePhotos(scope=document){
   [...scope.querySelectorAll('img[data-photo]')].forEach(img=>{if(!img.getAttribute('src'))setPhoto(img,img.dataset.photo)});
 }
-// Secours global : si une image ne charge pas, on essaie le chemin suivant
 document.addEventListener('error',e=>{
   const el=e.target;if(!el||el.tagName!=='IMG')return;
   const src=el.getAttribute('src')||'';
@@ -122,7 +100,6 @@ document.addEventListener('load',e=>{if(e.target&&e.target.tagName==='IMG')delet
 const mapObj=(o,fn)=>Object.fromEntries(Object.entries(o||{}).map(([k,v])=>[k,fn(v)]));
 const withImages=p=>({...p,image:imgUrl(p.image),colorImages:mapObj(p.colorImages,imgUrl),galleries:mapObj(p.galleries,a=>a.map(imgUrl))});
 
-// Construit un produit à partir de ses séries de photos : sets:{couleur:'série'}
 function buildProduct(p){
   const galleries=mapObj(p.sets,photoSet);
   const colorImages={...mapObj(galleries,g=>g[0]),...(p.cardImages||{})};
@@ -205,6 +182,12 @@ let cart=JSON.parse(localStorage.getItem('srbrand_cart')||'[]');
 let activeCategory='all',searchTerm='';
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 
+function setSectionVisible(el,visible){
+  if(!el)return;
+  el.hidden=!visible;
+  el.style.display=visible?'':'none';
+}
+
 function applyConfig(){
   document.title=document.title.replace('YOUR BRAND',CONFIG.brand);
   $$('#brandLogo,.footer-logo,#footerBrand').forEach(e=>e.textContent=CONFIG.brand);
@@ -246,9 +229,6 @@ function cardGalleryForColor(p,color){
   const start=Math.max(0,colors.indexOf(color));
   const orderedColors=[...colors.slice(start),...colors.slice(0,start)];
 
-  // Pour plusieurs couleurs:
-  // vue 1 couleur A -> vue 1 couleur B -> vue 1 couleur C...
-  // puis vue 2 couleur A -> vue 2 couleur B -> ...
   if(orderedColors.length>1){
     const galleries=orderedColors.map(c=>{
       const g=p?.galleries?.[c];
@@ -400,7 +380,6 @@ function closeQuickOrder(){
   QUICK_ORDER_STATE=null;
 }
 
-
 function renderQuickOrderGallery(product,color,activeSrc=null){
   const modal=$('#quickOrderModal');
   const image=$('#quickOrderImage',modal);
@@ -438,7 +417,6 @@ function openQuickOrder(product,initialColor=null){
 
   const title=$('#quickOrderTitle',modal);
   const price=$('#quickOrderPrice',modal);
-  const image=$('#quickOrderImage',modal);
   const colorLabel=$('#quickOrderColorLabel',modal);
   const colors=$('#quickOrderColors',modal);
   const sizes=$('#quickOrderSizes',modal);
@@ -635,8 +613,6 @@ function addToCart(id,color='red',size='S',quantity=1){
   if(e)e.qty+=qtyToAdd;else cart.push({key,id,color,size,qty:qtyToAdd});
   metaTrack('AddToCart',metaProductParams(p,color,qtyToAdd));
   saveCart();
-  // Le panier est aussi transmis dans l'URL. Ainsi le produit reste visible
-  // sur la page de validation même lors d'un test local en file://.
   window.location.href=checkoutUrl(cart);
 }
 function saveCart(){try{localStorage.setItem('srbrand_cart',JSON.stringify(cart))}catch{}renderCartCount();renderCartPage()}
@@ -662,7 +638,7 @@ function syncCheckoutUrl(){
 function changeCheckoutQty(key,d){
   const i=cart.find(x=>x.key===key);if(!i)return;
   i.qty=Math.max(0,(Number(i.qty)||0)+(Number(d)||0));
-  if(i.qty===0)cart=cart.filter(x=>x.key!==key);
+  if(i.qty<=0)cart=cart.filter(x=>x.key!==key);
   saveCart();
   syncCheckoutUrl();
   renderCheckoutPage();
@@ -692,17 +668,26 @@ function renderCheckoutPage(){
   const form=$('#checkoutForm'),itemsHost=$('#checkoutOrderItems');if(!form||!itemsHost)return;
   restoreCartFromCheckoutUrl();
   const content=$('#checkoutContent'),empty=$('#checkoutEmpty'),success=$('#checkoutSuccess'),items=checkoutItems();
-  if(success)success.hidden=true;
-  if(!items.length){content.hidden=true;empty.hidden=false;return}
+  const totalEl=$('#checkoutOrderTotal');
+  setSectionVisible(success,false);
+  if(!items.length){
+    itemsHost.innerHTML='';
+    if(totalEl)totalEl.textContent='0 DH';
+    setSectionVisible(content,false);
+    setSectionVisible(empty,true);
+    return;
+  }
   if(!META_CHECKOUT_TRACKED){
     metaTrack('InitiateCheckout',metaCheckoutParams(items));
     META_CHECKOUT_TRACKED=true;
   }
-  content.hidden=false;empty.hidden=true;let total=0;
+  setSectionVisible(content,true);
+  setSectionVisible(empty,false);
+  let total=0;
   itemsHost.innerHTML=items.map(i=>{const lineTotal=productLineTotal(i.product,i.qty);total+=lineTotal;const img=i.product.colorImages[i.color]||i.product.image;return `<article class="checkout-order-line"><img src="${img}" alt="${i.product.name}"><div><h3>${i.product.name}</h3><p>${COLOR_LABELS[i.color]||i.color} · Taille ${i.size}</p><div class="qty cart-qty checkout-qty" aria-label="Quantité de ${i.product.name}"><button type="button" data-checkout-minus="${i.key}" aria-label="Diminuer la quantité" title="Diminuer">−</button><span aria-live="polite">${i.qty}</span><button type="button" data-checkout-plus="${i.key}" aria-label="Augmenter la quantité" title="Augmenter">+</button></div></div><strong>${lineTotal} DH</strong></article>`}).join('');
-  const totalEl=$('#checkoutOrderTotal');if(totalEl)totalEl.textContent=`${total} DH`;
-  $$('[data-checkout-minus]',itemsHost).forEach(b=>b.onclick=()=>changeCheckoutQty(b.dataset.checkoutMinus,-1));
-  $$('[data-checkout-plus]',itemsHost).forEach(b=>b.onclick=()=>changeCheckoutQty(b.dataset.checkoutPlus,1));
+  if(totalEl)totalEl.textContent=`${total} DH`;
+  $$('[data-checkout-minus]',itemsHost).forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();changeCheckoutQty(b.dataset.checkoutMinus,-1)});
+  $$('[data-checkout-plus]',itemsHost).forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();changeCheckoutQty(b.dataset.checkoutPlus,1)});
   form.onsubmit=async e=>{
     e.preventDefault();
     if(!form.reportValidity())return;
@@ -776,15 +761,13 @@ function renderCheckoutPage(){
       if(method==='site'){
         cart=[];
         saveCart();
+        syncCheckoutUrl();
         form.reset();
-        const content=$('#checkoutContent');
-        const empty=$('#checkoutEmpty');
-        const success=$('#checkoutSuccess');
         const successOrder=$('#checkoutSuccessOrder');
-        if(content)content.hidden=true;
-        if(empty)empty.hidden=true;
+        setSectionVisible(content,false);
+        setSectionVisible(empty,false);
         if(successOrder)successOrder.textContent=orderId?`#${orderId}`:'';
-        if(success)success.hidden=false;
+        setSectionVisible(success,true);
         window.scrollTo({top:0,behavior:'smooth'});
         return;
       }
@@ -829,6 +812,7 @@ function renderCheckoutPage(){
 
       cart=[];
       saveCart();
+      syncCheckoutUrl();
 
       let fallbackTimer=null;
       const clearFallback=()=>{if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=null}};
@@ -983,7 +967,6 @@ function initHero(){
       size:'contain',
       bg:'#ead9d4'
     },
-
     {
       eyebrow:'NOUVEAU · SHORT GAINANT',
       title:'Maintien sculptant. Confort au quotidien.',
@@ -995,7 +978,6 @@ function initHero(){
       size:'contain',
       bg:'#eee8e2'
     },
-
     {
       eyebrow:'LINGERIE SATIN',
       title:'Satin moderne. Détails dorés.',
@@ -1007,7 +989,6 @@ function initHero(){
       size:'contain',
       bg:'#eadfd8'
     },
-
     {
       eyebrow:'DANSE ORIENTALE',
       title:'Élégance en mouvement.',
@@ -1019,7 +1000,6 @@ function initHero(){
       size:'contain',
       bg:'#ecebea'
     },
-
     {
       eyebrow:'CONFORT SCULPTANT',
       title:'Maintien doux. Ligne invisible.',
@@ -1031,7 +1011,6 @@ function initHero(){
       size:'contain',
       bg:'#eadbc8'
     },
-
     {
       eyebrow:'MAID SATIN',
       title:'Satin raffiné. Détails délicats.',
@@ -1043,7 +1022,6 @@ function initHero(){
       size:'contain',
       bg:'#efe7de'
     },
-
     {
       eyebrow:'NUIT EN DENTELLE',
       title:'Satin fluide. Dentelle raffinée.',
@@ -1055,7 +1033,6 @@ function initHero(){
       size:'contain',
       bg:'#eee8e3'
     },
-
     {
       eyebrow:'DOUCEUR AU QUOTIDIEN',
       title:'Sept culottes. Une semaine de confort.',
@@ -1067,7 +1044,6 @@ function initHero(){
       size:'contain',
       bg:'#efe8e4'
     },
-
     {
       eyebrow:'ROUGE & BLANC',
       title:'Un modèle signature aux détails contrastés.',
@@ -1118,10 +1094,10 @@ function initHero(){
 
   startAuto();
 }
-// Chaque étape est isolée : si une page n'a pas un élément, le reste continue de fonctionner
+
 const safeRun=(name,fn)=>{try{return fn()}catch(err){console.error(`[SR BRAND] Erreur dans ${name} :`,err)}};
 window.addEventListener('DOMContentLoaded',async()=>{
-  safeRun('renderPagePhotos',renderPagePhotos);   // <img data-photo="..."> (index, blog, articles, histoire)
+  safeRun('renderPagePhotos',renderPagePhotos);
   safeRun('initPage',initPage);
   safeRun('initProfileSticker',initProfileSticker);
   await safeRun('loadProducts',loadProducts);
