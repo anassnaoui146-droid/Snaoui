@@ -10,6 +10,29 @@ const CONFIG={
   instagramUrl:'https://www.instagram.com/srbrand.ma/'
 };
 
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyBjI5LgJHU4IYsuFHvcn426ecPU7SjHgM",
+  authDomain:"srbrand-7c572.firebaseapp.com",
+  projectId:"srbrand-7c572",
+  storageBucket:"srbrand-7c572.firebasestorage.app",
+  messagingSenderId:"900025722148",
+  appId:"1:900025722148:web:ef2da0f1faece735113fb1",
+  measurementId:"G-4ISY31VF8P"
+};
+
+let _firestoreDbPromise=null;
+async function getFirestoreDb(){
+  if(!_firestoreDbPromise){
+    _firestoreDbPromise=(async()=>{
+      const {initializeApp,getApps,getApp}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+      const {getFirestore}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+      const app=getApps().length?getApp():initializeApp(FIREBASE_CONFIG);
+      return getFirestore(app);
+    })();
+  }
+  return _firestoreDbPromise;
+}
+
 const COLORS=['red','blue','green','white','black'];
 const COLOR_LABELS={red:'Rouge',blue:'Bleu',green:'Vert Émeraude',pink:'Magenta',blush:'Rose poudré',rose:'Rose',purple:'Mauve',mauve:'Mauve grisé',violet:'Violet',bordo:'Bordo',white:'Blanc',black:'Noir',beige:'Beige',sky:'Blanc',assorted:'Couleurs assorties',redwhite:'Rouge & Blanc'};
 const COLOR_HEX={red:'#b41022',blue:'#173a76',green:'#08765d',pink:'#d62972',blush:'#d8a6ad',rose:'#efa5b2',purple:'#b69ac3',mauve:'#9f929d',violet:'#963d79',bordo:'#650018',white:'#f7f7f4',black:'#171717',beige:'#e8d2bc',sky:'#c9dcf8',assorted:'linear-gradient(135deg,#171717 0 25%,#a7192e 25% 50%,#f2d6d8 50% 75%,#f7f1e8 75%)',redwhite:'linear-gradient(135deg,#ffffff 0 48%,#c81f2c 48% 100%)'};
@@ -31,6 +54,10 @@ const COLOR_HEX={red:'#b41022',blue:'#173a76',green:'#08765d',pink:'#d62972',blu
    ============================================================ */
 const IMG_BASE='';
 const FALLBACK_BASES=['','static/images/','images/'];
+// Dernier recours (optionnel) : adresse de ton site en ligne où les photos existent déjà.
+// Utile pour tester les pages EN LOCAL (double-clic sur le fichier) quand les photos ne sont pas dans ton dossier.
+// Exemple : const REMOTE_BASE='https://www.ton-site.com/';   (laisser '' en production)
+const REMOTE_BASE='';
 
 // Séries de photos : 'préfixe': nombre de vues (préfixe-1.webp … préfixe-N.webp)
 const PHOTO_SETS={
@@ -65,6 +92,7 @@ function imgCandidates(f){
   FALLBACK_BASES.forEach(b=>list.push(b+file));
   const folder=(COLLECTION_FOLDERS.find(([prefix])=>file.startsWith(prefix))||[])[1];
   if(folder)list.push(`static/images/collections/${folder}/${file}`);
+  if(REMOTE_BASE)list.push(REMOTE_BASE+file);
   return [...new Set(list)];
 }
 // Affiche une photo dans un <img> (avec secours automatique)
@@ -83,7 +111,8 @@ function renderPagePhotos(scope=document){
 document.addEventListener('error',e=>{
   const el=e.target;if(!el||el.tagName!=='IMG')return;
   const src=el.getAttribute('src')||'';
-  if(!src||isAbsoluteUrl(src)||!/\.(webp|png|jpe?g)(\?|#|$)/i.test(src))return;
+  const inChain=el.dataset.imgTry!==undefined;
+  if(!src||(!inChain&&isAbsoluteUrl(src))||!/\.(webp|png|jpe?g)(\?|#|$)/i.test(src))return;
   const list=imgCandidates(src),next=Number(el.dataset.imgTry||0)+1;
   if(next<list.length){el.dataset.imgTry=String(next);el.src=list[next]}
   else console.warn(`[SR BRAND] Image introuvable : ${baseName(src)} — chemins essayés :`,list);
@@ -674,7 +703,7 @@ function renderCheckoutPage(){
   const totalEl=$('#checkoutOrderTotal');if(totalEl)totalEl.textContent=`${total} DH`;
   $$('[data-checkout-minus]',itemsHost).forEach(b=>b.onclick=()=>changeCheckoutQty(b.dataset.checkoutMinus,-1));
   $$('[data-checkout-plus]',itemsHost).forEach(b=>b.onclick=()=>changeCheckoutQty(b.dataset.checkoutPlus,1));
-  form.onsubmit=e=>{
+  form.onsubmit=async e=>{
     e.preventDefault();
     if(!form.reportValidity())return;
 
@@ -702,33 +731,35 @@ function renderCheckoutPage(){
 
     const orderPayloadItems=currentItems.map(({product,...item})=>({
       ...item,
+      name:product.name,
+      price:product.price,
       image:(product.colorImages&&product.colorImages[item.color])||product.image||''
     }));
 
-    fetch(`${API.python}/orders`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
+    const calculatedTotal=Math.round(currentItems.reduce((sum,i)=>sum+productLineTotal(i.product,i.qty),0));
+
+    try{
+      const db=await getFirestoreDb();
+      const {collection,addDoc,serverTimestamp}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+      const docRef=await addDoc(collection(db,'orders'),{
         customer_name:customerName,
         customer_first_name:firstName,
         customer_last_name:lastName,
         customer_phone:phone,
         customer_address:address,
         order_method:method,
+        status:'pending',
+        total:calculatedTotal,
         meta_fbp:metaCookie('_fbp'),
         meta_fbc:metaCookie('_fbc'),
         meta_event_source_url:window.location.href,
-        items:orderPayloadItems
-      })
-    })
-    .then(async response=>{
-      const result=await response.json().catch(()=>({}));
-      if(!response.ok)throw new Error(result.error||'Impossible d\'enregistrer la commande.');
-      return result;
-    })
-    .then(result=>{
-      const orderId=String(result.order_id||'').trim();
-      const total=Math.round(Number(result.total||currentItems.reduce((sum,i)=>sum+productLineTotal(i.product,i.qty),0)));
+        items:orderPayloadItems,
+        created_at:new Date().toISOString(),
+        createdAt:serverTimestamp()
+      });
+
+      const orderId=String(docRef.id||'').trim();
+      const total=calculatedTotal;
       try{sessionStorage.setItem('srbrand_last_order_id',orderId)}catch{}
 
       const purchaseParams=metaCheckoutParams(currentItems);
@@ -809,11 +840,11 @@ function renderCheckoutPage(){
           window.location.href=isMobile?mobileFallback:desktopFallback;
         }
       },1400);
-    })
-    .catch(error=>{
-      showToast(error.message||'Erreur lors de la commande');
+    }catch(error){
+      console.error('Erreur Firebase orders:',error);
+      showToast(error.message||'Impossible d\'enregistrer la commande.');
       resetCheckoutButtons(form);
-    });
+    }
   };
 }
 
@@ -918,7 +949,24 @@ function initPage(){
   const account=$('#accountBtn');if(account)account.onclick=()=>{window.location.href='compte.html'};
   const filters=$$('.filter');filters.forEach(b=>b.onclick=()=>{filters.forEach(x=>x.classList.remove('active'));b.classList.add('active');activeCategory=b.dataset.category;renderProducts()});
   const cp=$('#checkoutBtnPage');if(cp)cp.onclick=checkout;
-  const nf=$('#newsletterForm');if(nf)nf.onsubmit=async e=>{e.preventDefault();try{const response=await fetch(`${API.python}/newsletter`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('#newsletterEmail').value})});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Inscription impossible.');showToast('Merci ! Vous êtes inscrit(e).');nf.reset()}catch(error){showToast(error.message||'Le serveur est indisponible.')}};
+  const nf=$('#newsletterForm');if(nf)nf.onsubmit=async e=>{
+    e.preventDefault();
+    try{
+      const email=String($('#newsletterEmail').value||'').trim();
+      const db=await getFirestoreDb();
+      const {collection,addDoc,serverTimestamp}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+      await addDoc(collection(db,'newsletter'),{
+        email,
+        created_at:new Date().toISOString(),
+        createdAt:serverTimestamp()
+      });
+      showToast('Merci ! Vous êtes inscrit(e).');
+      nf.reset();
+    }catch(error){
+      console.error('Erreur Firebase newsletter:',error);
+      showToast(error.message||'Inscription impossible.');
+    }
+  };
   const cf=$('#contactForm');if(cf)cf.onsubmit=async e=>{e.preventDefault();const fd=new FormData(cf);try{const response=await fetch(`${API.python}/contact`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(fd.entries()))});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Envoi impossible.');showToast('Message envoyé !');cf.reset()}catch(error){showToast(error.message||'Le serveur est indisponible.')}};
 }
 function initHero(){
