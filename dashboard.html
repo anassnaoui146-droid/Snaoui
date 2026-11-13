@@ -12,8 +12,10 @@
       <div class="admin-brand">SR BRAND</div>
       <p class="eyebrow">ESPACE PRIVÉ</p>
       <h1>Dashboard SR BRAND</h1>
-      <p>Connectez-vous pour voir les commandes et les abonnés newsletter du site.</p>
+      <p>Connectez-vous avec vos identifiants Firebase pour accéder au tableau de bord.</p>
       <form id="adminLoginForm" class="admin-login-form">
+        <label>Email</label>
+        <input name="email" type="email" autocomplete="username" required>
         <label>Mot de passe</label>
         <input name="password" type="password" autocomplete="current-password" required>
         <button class="button button-dark full" type="submit">Se connecter</button>
@@ -53,20 +55,28 @@
         </div>
         <div id="adminNewsletter" class="admin-newsletter-list"></div>
       </section>
-
-      <section class="admin-password-card">
-        <h2>Changer le mot de passe</h2>
-        <form id="adminPasswordForm">
-          <input name="current_password" type="password" placeholder="Mot de passe actuel" required>
-          <input name="new_password" type="password" placeholder="Nouveau mot de passe (10 caractères min.)" minlength="10" required>
-          <button class="button button-light" type="submit">Modifier</button>
-          <span id="passwordStatus"></span>
-        </form>
-      </section>
     </section>
   </main>
 
-  <script>
+  <!-- IMPORTANT: Remplacez cette section par vos clés Firebase (Project Settings > General > Your apps) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    const firebaseConfig = {
+  apiKey: "AIzaSyBj2lSgJHU4IYsUfYNcvn4I6ecPU75jgPc",
+  authDomain: "srbrand-7c572.firebaseapp.com",
+  projectId: "srbrand-7c572",
+  storageBucket: "srbrand-7c572.firebasestorage.app",
+  messagingSenderId: "900025722148",
+  appId: "1:900025722148:web:ef2da61f1eaca735113fb1",
+  measurementId: "G-41SY31YFS9"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
     const $ = selector => document.querySelector(selector);
     const statusLabels = {
       pending: 'Nouvelle',
@@ -85,23 +95,12 @@
       return path.startsWith('static/images/') ? `/${encodeURI(path)}` : '';
     };
 
-    const fmtDate = value => {
-      if (!value) return '';
-      const date = new Date(value.replace(' ', 'T') + 'Z');
+    const fmtDate = (timestamp) => {
+      if (!timestamp) return '';
+      // Firebase Firestore timestamps ont une méthode toDate()
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
       return date.toLocaleString('fr-FR', {dateStyle: 'short', timeStyle: 'short'});
     };
-
-    async function api(path, options = {}) {
-      const response = await fetch('/api/admin' + path, {
-        headers: {'Content-Type': 'application/json', ...(options.headers || {})},
-        ...options
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw Object.assign(new Error(data.error || 'Erreur'), {status: response.status});
-      }
-      return data;
-    }
 
     function showLogin() {
       $('#adminLogin').hidden = false;
@@ -142,14 +141,14 @@
       return `<article class="admin-order-card">
         <div class="admin-order-top">
           <div>
-            <span class="admin-order-id">#${Number(order.id) || 0}</span>
+            <span class="admin-order-id">#${escapeHtml(order.id)}</span>
             <h2>${escapeHtml(firstName)} ${escapeHtml(lastName)}</h2>
             <p>${escapeHtml(fmtDate(order.created_at))}</p>
             <span class="admin-order-method ${order.order_method==='whatsapp'?'is-whatsapp':'is-site'}">${order.order_method==='whatsapp'?'WhatsApp':'Site'}</span>
           </div>
           <div>
             <strong>${Math.round(Number(order.total || 0))} DH</strong>
-            <select class="admin-status" data-order="${Number(order.id) || 0}">${statuses}</select>
+            <select class="admin-status" data-order="${order.id}">${statuses}</select>
           </div>
         </div>
         <div class="admin-customer">
@@ -174,7 +173,10 @@
 
     async function loadNewsletter() {
       try {
-        const subscribers = await api('/newsletter');
+        const q = query(collection(db, "newsletter"), orderBy("subscribed_at", "desc"));
+        const querySnapshot = await getDocs(q);
+        const subscribers = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+
         $('#statNewsletter').textContent = subscribers.length;
         $('#newsletterSubtitle').textContent =
           `${subscribers.length} adresse${subscribers.length > 1 ? 's' : ''} e-mail enregistrée${subscribers.length > 1 ? 's' : ''}`;
@@ -186,19 +188,16 @@
         }
         host.innerHTML = subscribers.map(newsletterHtml).join('');
       } catch (error) {
-        if (error.status === 401) showLogin();
-        else $('#adminNewsletter').innerHTML =
-          `<div class="admin-empty"><p>${escapeHtml(error.message)}</p></div>`;
+        $('#adminNewsletter').innerHTML = `<div class="admin-empty"><p>${escapeHtml(error.message)}</p></div>`;
       }
-    }
-
-    async function loadDashboard() {
-      await Promise.all([loadOrders(), loadNewsletter()]);
     }
 
     async function loadOrders() {
       try {
-        const orders = await api('/orders');
+        const q = query(collection(db, "orders"), orderBy("created_at", "desc"));
+        const querySnapshot = await getDocs(q);
+        const orders = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+
         $('#adminSubtitle').textContent = `${orders.length} commande${orders.length > 1 ? 's' : ''} enregistrée${orders.length > 1 ? 's' : ''}`;
         $('#statPending').textContent = orders.filter(order => order.status === 'pending').length;
         $('#statOrders').textContent = orders.length;
@@ -213,71 +212,70 @@
         }
 
         host.innerHTML = orders.map(orderHtml).join('');
+        
         document.querySelectorAll('.admin-status').forEach(select => {
           select.onchange = async () => {
             select.disabled = true;
             try {
-              await api(`/orders/${select.dataset.order}/status`, {
-                method: 'POST',
-                body: JSON.stringify({status: select.value})
+              const orderRef = doc(db, "orders", select.dataset.order);
+              await updateDoc(orderRef, {
+                status: select.value
               });
               await loadOrders();
             } catch (error) {
-              alert(error.message);
+              alert("Erreur lors de la mise à jour: " + error.message);
             } finally {
               select.disabled = false;
             }
           };
         });
       } catch (error) {
-        if (error.status === 401) showLogin();
-        else $('#adminOrders').innerHTML = `<div class="admin-empty"><p>${escapeHtml(error.message)}</p></div>`;
+         $('#adminOrders').innerHTML = `<div class="admin-empty"><p>${escapeHtml(error.message)}</p></div>`;
       }
+    }
+
+    async function loadDashboard() {
+      await Promise.all([loadOrders(), loadNewsletter()]);
     }
 
     $('#adminLoginForm').onsubmit = async event => {
       event.preventDefault();
       const form = event.currentTarget;
-      const password = new FormData(form).get('password');
+      const formData = new FormData(form);
+      const email = formData.get('email');
+      const password = formData.get('password');
       $('#adminLoginError').textContent = '';
+      
       try {
-        await api('/login', {method: 'POST', body: JSON.stringify({password})});
+        await signInWithEmailAndPassword(auth, email, password);
         form.reset();
-        showPanel();
+        // L'écouteur onAuthStateChanged s'occupera d'afficher le panel
       } catch (error) {
-        $('#adminLoginError').textContent = error.message;
+        let msg = "Erreur de connexion.";
+        if (error.code === 'auth/invalid-credential') msg = "Email ou mot de passe incorrect.";
+        $('#adminLoginError').textContent = msg;
       }
     };
 
     $('#adminRefresh').onclick = loadDashboard;
+    
     $('#adminLogout').onclick = async () => {
-      await api('/logout', {method: 'POST'});
-      showLogin();
-    };
-
-    $('#adminPasswordForm').onsubmit = async event => {
-      event.preventDefault();
-      const form = event.currentTarget;
-      const data = Object.fromEntries(new FormData(form));
-      const status = $('#passwordStatus');
-      status.textContent = '';
       try {
-        await api('/password', {method: 'POST', body: JSON.stringify(data)});
-        status.textContent = 'Mot de passe modifié ✓';
-        form.reset();
+        await signOut(auth);
       } catch (error) {
-        status.textContent = error.message;
+        console.error("Erreur de déconnexion", error);
       }
     };
 
-    (async () => {
-      try {
-        const me = await api('/me');
-        me.logged_in ? showPanel() : showLogin();
-      } catch {
+    // Écouteur global pour l'état de connexion Firebase
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        showPanel();
+      } else {
         showLogin();
       }
-    })();
+    });
+
   </script>
 </body>
 </html>
